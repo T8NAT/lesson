@@ -13,9 +13,9 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\WordController;
 use Illuminate\Support\Facades\Route;
 
-//Route::get('/', function () {
-//    return view('welcome');
-//});
+Route::get('/', function () {
+    return redirect()->route('dashboard');
+});
 
 Route::prefix('dashboard')->middleware(['auth:user,admin'])->group(function () {
     Route::view('/', 'cms.dashboard')->name('dashboard');
