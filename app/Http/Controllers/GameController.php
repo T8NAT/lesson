@@ -113,7 +113,8 @@ class GameController extends Controller
      */
     public function edit(string $id)
     {
-        return view('cms.game.edit');
+        $game = Game::query()->findOrFail($id);
+        return view('cms.game.edit', compact('game'));
     }
 
     /**
