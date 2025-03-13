@@ -78,7 +78,6 @@ class GameController extends Controller
         $uploadedFiles = session()->get('uploaded_files', []);
         if ($request->hasFile('images')) {
             $images = $this->uploadService->moveMedia($uploadedFiles, 'images/games');
-
             foreach ($images as $image) {
                 $data['image']= $image;
             }
