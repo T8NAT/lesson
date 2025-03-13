@@ -61,7 +61,7 @@ class GameController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request ,UploadService $UploadService)
     {
         $request->validate([
             'name' => 'required|unique:games|max:255',
@@ -75,19 +75,23 @@ class GameController extends Controller
 
         $data['status'] = $request->input('status') == 'active' ? 'active' : 'inactive';
 
-        $uploadedFiles = session()->get('uploaded_files', []);
-        if ($request->hasFile('images')) {
-            $images = $this->uploadService->moveMedia($uploadedFiles, 'images/games');
-            foreach ($images as $image) {
-                $data['image']= $image;
-            }
-        }
-
         $game = Game::query()->create($data);
 
         if ($request->has('category_id')) {
             $game->categories()->attach($request->category_id);
         }
+
+        $uploadedFiles = session()->get('uploaded_files', []);
+        $savedImages = $UploadService->moveImages($uploadedFiles,'images/games');
+
+        foreach ($savedImages as $imagePath) {
+            $game->images()->create([
+                'game_id' => $game->id,
+                'images' => $imagePath,
+            ]);
+        }
+
+        session()->forget('uploaded_files');
 
         if ($game) {
             return ControllerHelper::generateResponse('success','تم اضافة اللعبة بنجاح',200);
