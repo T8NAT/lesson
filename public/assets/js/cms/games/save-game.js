@@ -13,6 +13,27 @@ var KTAppSaveGame = function () {
             else statusEl.classList.add("bg-danger");
         });
     };
+
+    const initDropzone = () => {
+        const uploadedFiles = [];
+        const myDropzone = new Dropzone("#kt_add_game_media", {
+            url: routes.post, // Update this to your server-side upload handler
+            paramName: "images",
+            maxFiles: 10,
+            maxFilesize: 10, // MB
+            addRemoveLinks: true,
+            acceptedFiles: 'image/*',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (file, response) {
+                uploadedFiles.push(response.filePath); // Adjust based on server response
+            },
+            removedfile: function (file) {
+                file.previewElement.remove();
+            }
+        });
+    };
     const initGameForm = () => {
         const form = document.getElementById("kt_add_game_form");
         const submitButton = form.querySelector("button[type='submit']");
@@ -154,6 +175,7 @@ var KTAppSaveGame = function () {
         init: function () {
             initGameForm();
             initStatusToggle();
+            initDropzone();
         }
     };
 }();
