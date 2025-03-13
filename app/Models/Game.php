@@ -33,4 +33,8 @@ class Game extends Model
     {
         return $this->belongsTo(Type::class);
     }
+    public function images(): HasMany
+    {
+        return $this->hasMany(Image::class);
+    }
 }
