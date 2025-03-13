@@ -78,7 +78,7 @@
                             </div>
                             <!--end::Image input-->
                             <!--begin::Description-->
-                            <div class="text-muted fs-7">{{'قم بتعيين صورة مصغرة للفئة. يتم قبول ملفات الصور *.png و*.jpg و*.jpeg فقط'}}</div>
+                            <div class="text-muted fs-7">{{'قم بتعيين ايقونة للعبة. يتم قبول ملفات الصور *.png و*.jpg و*.jpeg فقط'}}</div>
                             <!--end::Description-->
                         </div>
                         <!--end::Card body-->
