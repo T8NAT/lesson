@@ -29,7 +29,7 @@
                         <div class="card-header">
                             <!--begin::Card title-->
                             <div class="card-title">
-                                <h2>{{'صورة'}}</h2>
+                                <h2>{{'ايقونة اللعبة'}}</h2>
                             </div>
                             <!--end::Card title-->
                         </div>
@@ -54,7 +54,7 @@
                                     </i>
                                     <!--end::Icon-->
                                     <!--begin::Inputs-->
-                                    <input type="file" name="image" accept=".png, .jpg, .jpeg" />
+                                    <input type="file" name="icon" accept=".png, .jpg, .jpeg" />
                                     <input type="hidden" name="avatar_remove" />
                                     <!--end::Inputs-->
                                 </label>
@@ -82,7 +82,7 @@
                             <!--end::Description-->
                         </div>
                         <!--end::Card body-->
-                        @error('image')
+                        @error('icon')
                         <span class="text-danger">{{$message}}</span>
                         @enderror
                     </div>
@@ -230,6 +230,48 @@
                                 @enderror
                             </div>
                             <!--end::Input group-->
+
+                            <!--begin::Media-->
+                            <div class="card card-flush py-4">
+                                <!--begin::Card header-->
+                                <div class="card-header">
+                                    <div class="card-title">
+                                        <h2>الوسائط</h2>
+                                    </div>
+                                </div>
+                                <!--end::Card header-->
+                                <!--begin::Card body-->
+                                <div class="card-body pt-0">
+                                    <!--begin::Input group-->
+                                    <div class="fv-row mb-2">
+                                        <!--begin::Dropzone-->
+                                        <div class="dropzone" id="kt_add_game_media">
+                                            <!--begin::Message-->
+                                            <div class="dz-message needsclick">
+                                                <!--begin::Icon-->
+                                                <i class="ki-duotone ki-file-up text-primary fs-3x">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                                <!--end::Icon-->
+                                                <!--begin::Info-->
+                                                <div class="ms-4">
+                                                    <h3 class="fs-5 fw-bold text-gray-900 mb-1">{{'قم باسقاط الملفات هنا او اضغط هنا لرفع الملفات'}}.</h3>
+                                                    <span class="fs-7 fw-semibold text-gray-400">{{'تحميل مايصل الى 10 صور'}}</span>
+                                                </div>
+                                                <!--end::Info-->
+                                            </div>
+                                        </div>
+                                        <!--end::Dropzone-->
+                                    </div>
+                                    <!--end::Input group-->
+                                    <!--begin::Description-->
+                                    <div class="text-muted fs-7">{{'قم بتعيين معرض وسائط اللعبة'}}.</div>
+                                    <!--end::Description-->
+                                </div>
+                                <!--end::Card header-->
+                            </div>
+                            <!--end::Media-->
                         </div>
                         <!--end::Card header-->
                     </div>
@@ -293,6 +335,9 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/i18n/ar.min.js"></script>
 
     <script>
+        const routes = {
+            post: "{{ route('store-media') }}",
+        };
         const categories = {
             get: "{{ route('getCategories') }}",
         };
