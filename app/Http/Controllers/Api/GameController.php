@@ -158,7 +158,7 @@ class GameController extends Controller
 
                 $words = collect([$correctWord])->merge($incorrectWords)->shuffle();
 
-                $wordRecord = $category->words()->whereJsonContains('words', $correctWord)->first();
+//                $wordRecord = $category->words()->whereJsonContains('words', $correctWord)->first();
 
 //                $image = $wordRecord ? $wordRecord->image : null;
 
