@@ -23,6 +23,7 @@ Route::namespace('api/')->prefix('teacher/')->group(function (){
 });
 
 Route::namespace('api/')->prefix('games/')->group(function (){
+    Route::get('get-games',[GameController::class, 'index']);
     Route::post('game/{id}/send', [TestGameController::class, 'sendWord']);
 
     Route::post('check-image/{gameId}', [GameController::class, 'checkImage'])->middleware('auth:student');
