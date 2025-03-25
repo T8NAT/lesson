@@ -13,11 +13,12 @@ class Game extends Model
     protected $fillable = [
         'name',
         'description',
-        'image',
+        'icon',
         'slug',
         'category_id',
         'type_id',
         'status',
+        'images',
     ];
     public function categories(): BelongsToMany
     {
