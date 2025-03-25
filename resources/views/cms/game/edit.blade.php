@@ -2,6 +2,9 @@
 @section('toolbar-title','تعديل اللعبة')
 @section('breadcrumb','كافة الالعاب')
 @section('sub-breadcrumb',$game->name)
+@section('style')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+@endsection
 @section('content')
     <!--begin::Heading-->
     <div class="card-border mb-13 text-center">
@@ -21,6 +24,7 @@
         <div id="kt_app_content_container" class="app-container container-xxl">
             <form id="kt_add_game_form" action="{{ route('games.update',$game->id) }}" enctype="multipart/form-data" method="POST" class="form d-flex flex-column flex-lg-row" data-kt-redirect="{{route('games.index')}}">
                 @csrf
+                @method('PUT')
                 <!--begin::Aside column-->
                 <div class="d-flex flex-column gap-7 gap-lg-10 w-100 w-lg-300px mb-7 me-lg-10">
                     <!--begin::Thumbnail settings-->
@@ -106,7 +110,7 @@
                         <!--begin::Card body-->
                         <div class="card-body pt-0">
                             <!--begin::Select2-->
-                            <select class="form-select mb-2 select2-hidden-accessible" data-control="select2" multiple name="category_id[]" data-hide-search="true" aria-hidden="true"  data-placeholder="حدد خياراً">
+                            <select class="form-select mb-2 select2-hidden-accessible" data-control="select2" multiple name="category_id[]" data-hide-search="true" aria-hidden="true"  data-placeholder="حدد خياراً" data-selected-id="{{ $game->categories->pluck('id')  }}">
                                 <option></option>
                             </select>
                             <!--end::Select2-->
@@ -136,7 +140,7 @@
                         <!--begin::Card body-->
                         <div class="card-body pt-0">
                             <!--begin::Select2-->
-                            <select class="form-select mb-2 select2-hidden-accessible" data-control="select2" name="type_id" data-hide-search="true" aria-hidden="true"  data-placeholder="حدد خياراً">
+                            <select class="form-select mb-2 select2-hidden-accessible" data-control="select2" name="type_id" data-hide-search="true" aria-hidden="true"  data-placeholder="حدد خياراً" data-selected-id="{{ $game->type->id  }}">
                                 <option></option>
                             </select>
                             <!--end::Select2-->
@@ -168,9 +172,9 @@
                             <!--begin::Select2-->
                             <select class="form-select mb-2" name="status" data-control="select2" data-hide-search="true" data-placeholder="{{'حدد خياراً'}}" id="kt_add_game_status_select">
                                 <option></option>
-                                <option value="active">{{'فعالة'}}</option>
+                                <option value="active" @selected($game->status == 'active')>{{'فعالة'}}</option>
                                 {{--                                    <option value="scheduled">Scheduled</option>--}}
-                                <option value="inactive">{{'غير فعالة'}}</option>
+                                <option value="inactive" @selected($game->status == 'inactive')>{{'غير فعالة'}}</option>
                             </select>
                             <!--end::Select2-->
                             <!--begin::Description-->
@@ -232,7 +236,7 @@
                             <!--end::Input group-->
 
                             <!--begin::Media-->
-                            <div class="card card-flush py-4">
+                            <div class="card card-flush py-4" id="media-section">
                                 <!--begin::Card header-->
                                 <div class="card-header">
                                     <div class="card-title">
@@ -294,7 +298,7 @@
                                 <!--end::Label-->
                                 <!--begin::Input group with button-->
                                 <div class="input-group mb-2">
-                                    <input type="text" readonly id="slug" class="form-control" name="slug" placeholder="عنوان الرابط" />
+                                    <input type="text" readonly id="slug" value="{{$game->slug}}" class="form-control" name="slug" placeholder="عنوان الرابط" />
                                 </div>
                                 <!--end::Input group with button-->
                                 <!--begin::Description-->
