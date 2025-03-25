@@ -89,7 +89,7 @@ class GameController extends Controller
 
                 $randomWord = collect($category->words)->pluck('words')->flatten()->random();
                 $data = ['game' => $game->name, 'word' => $randomWord, 'category' => $category->name, 'type'=>$gameType];
-//                if you want use the session
+//                if you want used the session
 
 //                $students = session()->get('students', []);
 //
