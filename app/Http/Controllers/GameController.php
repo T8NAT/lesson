@@ -61,19 +61,26 @@ class GameController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request ,UploadService $UploadService)
+    public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|unique:games|max:255',
-            'category_id'=>'required|exists:categories,id',
-            'type_id'=>'required|exists:types,id',
-            'slug'=>'required|unique:games,slug',
-            'status'=>'required|in:active,inactive',
+            'name'       => 'required|unique:games|max:255',
+            'category_id'=> 'required|exists:categories,id',
+            'type_id'    => 'required|exists:types,id',
+            'slug'       => 'required|unique:games,slug',
+            'status'     => 'required|in:active,inactive',
+            'images.*'   => 'nullable',
+
         ]);
 
         $data = $request->only(['name','slug','type_id','description']);
 
         $data['status'] = $request->input('status') == 'active' ? 'active' : 'inactive';
+
+        if ($request->has('icon')) {
+            $icon = $this->uploadService->uploadImage($request, 'icon', 'images/games/icon');
+            $data['icon'] = $icon;
+        }
 
         $game = Game::query()->create($data);
 
@@ -82,7 +89,7 @@ class GameController extends Controller
         }
 
         $uploadedFiles = session()->get('uploaded_files', []);
-        $savedImages = $UploadService->moveImages($uploadedFiles,'images/games');
+        $savedImages = $this->uploadService->moveMedia($uploadedFiles,'media/games');
 
         foreach ($savedImages as $imagePath) {
             $game->images()->create([
@@ -120,35 +127,49 @@ class GameController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id,UploadService $UploadService)
     {
         $request->request->add(['id' => $id]);
         $request->validate([
-            'name' => 'required|unique:games|max:255,games,'.$id,
+            'name' => 'required|max:255|unique:games,name,'.$id,
             'category_id'=>'required|exists:categories,id',
             'type_id'=>'required|exists:types,id',
-            'slug'=>'required|unique:games,slug',
+            'slug'=>'required|unique:games,slug,'.$id,
             'status'=>'required|in:active,inactive',
 
         ]);
         $game = Game::query()->find($id);
         $data = $request->only(['name','slug','type_id']);
         if ($game){
-            if ($request->hasFile('image')) {
+            if ($request->has('icon')) {
                 if ($game->icon) {
-                    $imagePath =public_path('storage/'.$game->icon);
-                    if (file_exists($imagePath)) {
-                        unlink($imagePath);
+                    $iconPath =public_path('storage/'.$game->icon);
+                    if (file_exists($iconPath)) {
+                        unlink($iconPath);
                     }
                 }
-                $game = $this->uploadService->uploadImage($request, 'image', 'images/games');
-                $data['image'] = $game;
+                $icon = $this->uploadService->uploadImage($request, 'icon', 'images/games/icon');
+                $data['icon'] = $icon;
 
             }else{
-                $data['image'] = $game->image;
+                $data['icon'] = $game->icon;
             }
         }
+
         $is_Updated = $game->update($data);
+
+        $uploadedFiles = session()->get('uploaded_files', []);
+        $savedImages = $UploadService->moveMedia($uploadedFiles,'media/games');
+
+        foreach ($savedImages as $imagePath) {
+            $game->images()->create([
+                'game_id' => $game->id,
+                'images' => $imagePath,
+            ]);
+        }
+
+        session()->forget('uploaded_files');
+
         if ($is_Updated) {
             return ControllerHelper::generateResponse('success','تم تعديل اللعبة بنجاح',200);
         }else{
@@ -163,10 +184,10 @@ class GameController extends Controller
     {
         $game = Game::query()->find($id);
         if ($game){
-            if ($game->image){
-                $imagePath = public_path('storage/'.$game->image);
-                if (file_exists($imagePath)){
-                    unlink($imagePath);
+            if ($game->icon){
+                $iconPath = public_path('storage/'.$game->icon);
+                if (file_exists($iconPath)){
+                    unlink($iconPath);
                 }
             }
         }
@@ -196,9 +217,9 @@ class GameController extends Controller
         $name = uniqid() . '_' . trim($file->hashName());
         $file->move($path, $name);
 
-        // Store the file path in the session
+        // Store the file path in the session (or database)
         $uploadedFiles = session()->get('uploaded_files', []);
-        $uploadedFiles[] = $name;
+        $uploadedFiles[] = $name; // Store the filename
         session()->put('uploaded_files', $uploadedFiles);
 
         return response()->json([
