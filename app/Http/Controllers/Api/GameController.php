@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\ControllerHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryResource;
+use App\Http\Resources\GameResource;
 use App\Models\Category;
 use App\Models\Game;
 use App\Services\UploadService;
@@ -23,6 +24,11 @@ use Illuminate\Support\Facades\Validator;
 
 class GameController extends Controller
 {
+    public function index(){
+        $games = Game::query()->latest()->get();
+        $games_data = GameResource::collection($games);
+        return ControllerHelper::generateResponseApi(true,'تم جلب كافة الالعاب بنجاح',$games_data,200);
+    }
 
 
     public function checkGame(Request $request)
@@ -89,22 +95,9 @@ class GameController extends Controller
 
                 $randomWord = collect($category->words)->pluck('words')->flatten()->random();
                 $data = ['game' => $game->name, 'word' => $randomWord, 'category' => $category->name, 'type'=>$gameType];
-//                if you want used the session
-
-//                $students = session()->get('students', []);
-//
-//                if (Auth::guard('student')->check()) {
-//                    $studentId = Auth::guard('student')->id();
-////                    dd($studentId);
-//                    $students[] = [
-//                        'student_id' => $studentId,
-//                        'randomWord' => $randomWord,
-//                    ];
-//                    session()->put('students', $students);
-//
-//                }
 
                 $students = Cache::get('students', []);
+                
                 if (Auth::guard('student')->check()) {
                     $studentId = Auth::guard('student')->id();
                     $students[] = [
