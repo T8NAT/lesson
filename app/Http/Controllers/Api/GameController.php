@@ -6,6 +6,7 @@ use App\Helpers\ControllerHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\GameResource;
+use App\Http\Resources\ImagesResource;
 use App\Models\Category;
 use App\Models\Game;
 use App\Services\UploadService;
@@ -97,7 +98,7 @@ class GameController extends Controller
                 $data = ['game' => $game->name, 'word' => $randomWord, 'category' => $category->name, 'type'=>$gameType];
 
                 $students = Cache::get('students', []);
-                
+
                 if (Auth::guard('student')->check()) {
                     $studentId = Auth::guard('student')->id();
                     $students[] = [
@@ -106,11 +107,78 @@ class GameController extends Controller
                         ];
                     Cache::put('students', $students, now()->addHours(2));
                 }
-                return ControllerHelper::generateResponseApi(true, 'ابحث من حولك عن', $data, 200);
+                return ControllerHelper::generateResponseApi(true, 'تم تشغيل لعبة البحث عن الاسماء بنجاح', $data, 200);
                 break;
-                case 'صورة وكلمات' :
 
-                    case 'صوت':
+//                case 'صورة وكلمات' :
+//                    $category = $game->categories()->where('categories.id', $category_id)->first();
+//                    if (!$category || !$category->words) {
+//                        return ControllerHelper::generateResponseApi(false, 'لا توجد كلمات متاحة لهذه اللعبة في هذا القسم.',
+//                            null, 404);
+//                    }
+//
+//                    $randomWords = collect($category->words)->flatten()->random();
+//                    $data = ['game' => GameResource::make($game), 'words' => $randomWords,];
+//
+//                    if (Auth::guard('student')->check()) {
+//                        $studentId = Auth::guard('student')->id();
+//                        $students[] = [
+//                            'student_id' => $studentId,
+//                            'correctWord' => '',
+//                        ];
+//                        Cache::put('students', $students, now()->addHours(2));
+//                    }
+//                    return ControllerHelper::generateResponseApi(true, 'تم تشغيل لعبة الكلمات بنجاح', $data, 200);
+//                    break;
+
+            case 'صورة وكلمات':
+                $category = $game->categories()->where('categories.id', $category_id)->first();
+
+                if (!$category || !$category->words) {
+                    return ControllerHelper::generateResponseApi(false, 'لا توجد كلمات متاحة لهذه اللعبة في هذا القسم.', null, 404);
+                }
+
+                $allWords = $category->words->pluck('words')->flatten();
+
+                $wordCount = $allWords->count();
+
+                if ($wordCount < 4) {
+                    return ControllerHelper::generateResponseApi(false, 'لا يوجد ما يكفي من الكلمات في هذه الفئة للعب هذه اللعبة. يجب أن يكون هناك 4 كلمات على الأقل.', null, 400);
+                }
+
+                $correctWord = $allWords->random();
+
+                $incorrectWords = collect([]);
+                while ($incorrectWords->count() < 3) {
+                    $randomWord = $allWords->random();
+                    if ($randomWord !== $correctWord && !$incorrectWords->contains($randomWord)) {
+                        $incorrectWords->push($randomWord);
+                    }
+                }
+
+                $words = collect([$correctWord])->merge($incorrectWords)->shuffle();
+
+                $wordRecord = $category->words()->whereJsonContains('words', $correctWord)->first();
+
+//                $image = $wordRecord ? $wordRecord->image : null;
+
+                $data = [
+                    'game' => GameResource::make($game),
+//                    'image' => $image,
+                    'words' => $words,
+                    'correct_word' => $correctWord,
+                ];
+
+                if (Auth::guard('student')->check()) {
+                    $studentId = Auth::guard('student')->id();
+                    Cache::put('correct_word_' . $studentId, $correctWord, now()->addHours(2));
+                }
+
+                return ControllerHelper::generateResponseApi(true, 'تم تشغيل لعبة الكلمات بنجاح', $data, 200);
+                break;
+
+
+            case 'صوت':
                         break;
 
                         default:
