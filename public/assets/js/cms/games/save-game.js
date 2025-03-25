@@ -34,6 +34,31 @@ var KTAppSaveGame = function () {
             }
         });
     };
+
+    const initTypeSelect = () => {
+        const typeSelect = document.querySelector('select[name="type_id"]');
+        const mediaSection = document.getElementById('media-section');
+
+        if (!typeSelect || !mediaSection) {
+            console.error("typeSelect or mediaSection not found");
+            return;
+        }
+
+        const updateMediaSectionVisibility = (selectedType) => {
+            console.log("selectedType:", selectedType);
+            if (selectedType === "1") {
+                mediaSection.style.display = "none";
+            } else {
+                mediaSection.style.display = "block";
+            }
+        };
+
+        // You might need to call this function after Select2 finishes loading data
+        $(typeSelect).on("select2:select", function (e) {
+            const selectedType = e.target.value;
+            updateMediaSectionVisibility(selectedType);
+        });
+    };
     const initGameForm = () => {
         const form = document.getElementById("kt_add_game_form");
         const submitButton = form.querySelector("button[type='submit']");
@@ -131,11 +156,13 @@ var KTAppSaveGame = function () {
                 processResults: function (data, params) {
                     params.page = params.page || 1;
 
+                    // console.log("DATA", data);
+
                     return {
                         results: $.map(data.data, function (item) {
                             return {
                                 id: item.id,
-                                text: item.name
+                                text: item.name,
                             };
                         }),
                         pagination: {
@@ -166,16 +193,66 @@ var KTAppSaveGame = function () {
             },
         });
     };
-    $(document).ready(function(){
-        initializeSelect2WithInfiniteScroll($('select[name="category_id[]"]'), categories.get);
-        initializeSelect2WithInfiniteScroll($('select[name="type_id"]'), types.get);
+    // $(document).ready(function(){
+    //     initializeSelect2WithInfiniteScroll($('select[name="category_id[]"]'), categories.get);
+    //     initializeSelect2WithInfiniteScroll($('select[name="type_id"]'), types.get);
+    //     initTypeSelect();
+    //
+    // });
+
+
+    $(document).ready(function() {
+        const selectElement = $('select[name="category_id[]"]');
+        const categoryId = selectElement.data('selected-id');
+        if (categoryId) {
+            $.ajax({
+                url: categories.get,
+                dataType: 'json',
+                data: { id: categoryId }
+            }).then(function(data) {
+                if (data && data.data ) {
+                    const selectedItem = data.data.find(item => item.id == categoryId);
+                    if(selectedItem){
+                        const option = new Option(selectedItem.name, selectedItem.id, true, true);
+                        selectElement.append(option).trigger('change');
+                        initializeSelect2WithInfiniteScroll(selectElement, categories.get, categoryId);
+                    }
+                }
+            });
+        }else{
+            initializeSelect2WithInfiniteScroll(selectElement, categories.get, categoryId);
+        }
+
+        const selectElement1 = $('select[name="type_id"]');
+        const typeId = selectElement1.data('selected-id');
+        if (typeId) {
+            $.ajax({
+                url: types.get,
+                dataType: 'json',
+                data: { id: typeId }
+            }).then(function(data) {
+                if (data && data.data ) {
+                    const selectedItem = data.data.find(item => item.id == typeId);
+                    if(selectedItem){
+                        const option = new Option(selectedItem.name, selectedItem.id, true, true);
+                        selectElement1.append(option).trigger('change');
+                        initializeSelect2WithInfiniteScroll(selectElement1, types.get, typeId);
+                    }
+                }
+            });
+        }else{
+            initializeSelect2WithInfiniteScroll(selectElement1, types.get, typeId);
+        }
     });
+
 
     return {
         init: function () {
             initGameForm();
             initStatusToggle();
             initDropzone();
+            initTypeSelect();
+
         }
     };
 }();
