@@ -2,6 +2,9 @@
 @section('toolbar-title','اضافة لعبة جديد')
 @section('breadcrumb','كافة الالعاب')
 @section('sub-breadcrumb','اضافة لعبة جديدة')
+@section('style')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+@endsection
 @section('content')
     <!--begin::Heading-->
     <div class="card-border mb-13 text-center">
@@ -232,7 +235,7 @@
                             <!--end::Input group-->
 
                             <!--begin::Media-->
-                            <div class="card card-flush py-4">
+                            <div class="card card-flush py-4" id="media-section">
                                 <!--begin::Card header-->
                                 <div class="card-header">
                                     <div class="card-title">
