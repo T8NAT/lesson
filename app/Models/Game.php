@@ -25,10 +25,10 @@ class Game extends Model
         return $this->belongsToMany(Category::class,'category_game','game_id','category_id');
     }
 
-    public function words(): HasManyThrough
-    {
-        return $this->hasManyThrough(Word::class, Category::class, 'id','category_id');
-    }
+//    public function words(): HasManyThrough
+//    {
+//        return $this->hasManyThrough(Word::class, Category::class, 'id','category_id');
+//    }
 
     public function type(): BelongsTo
     {
