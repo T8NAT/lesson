@@ -16,10 +16,11 @@ class GameResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
-            'image' => url(Storage::url($this->image)),
+            'icon' => url(Storage::url($this->icon)),
             'description' => $this->description,
             'status' => $this->status,
-            'type' => TypeResource::make($this->type)
+            'type' => TypeResource::make($this->type),
+            'images' => ImagesResource::collection($this->images),
         ];
     }
 }
