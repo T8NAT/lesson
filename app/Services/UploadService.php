@@ -51,7 +51,7 @@ class UploadService
         }
     }
 
-    public function moveImages(array $uploadedFiles, $destinationFolder)
+    public function moveMedia(array $uploadedFiles, $destinationFolder)
     {
         $savedFiles = [];
 
