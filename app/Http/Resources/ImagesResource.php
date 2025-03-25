@@ -13,7 +13,7 @@ class ImagesResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'images'=>url(Storage::url($this->images))
+            'image' => url(Storage::url($this->images))
         ];
     }
 }
