@@ -12,8 +12,8 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::query()->with('games')->latest()->get();
-        return ControllerHelper::generateResponseApi(true, 'كافة الاقسام',
-            ['categories' => CategoryResource::collection($categories)], 200);
+        $categories_data = CategoryResource::collection($categories);
+        return ControllerHelper::generateResponseApi(true, 'كافة الاقسام', $categories_data, 200);
     }
 
     public function category($id){
