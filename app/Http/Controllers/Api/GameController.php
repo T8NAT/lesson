@@ -163,8 +163,8 @@ class GameController extends Controller
 //                $image = $wordRecord ? $wordRecord->image : null;
 
                 $data = [
-                    'game' => GameResource::make($game),
-//                    'image' => $image,
+                    'game' => $game->name,
+                    'image' => ImagesResource::collection($game->images),
                     'words' => $words,
                     'correct_word' => $correctWord,
                 ];
