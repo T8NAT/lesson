@@ -15,6 +15,8 @@ Route::namespace('api/')->prefix('student/')->group(function (){
     Route::post('logout',[StudentAuthController::class, 'logout'])->middleware('auth:student');
 });
 
+// login cheack role and chack email and password
+Route::post('login', [AuthController::class, 'login']);
 
 Route::namespace('api/')->prefix('teacher/')->group(function (){
     Route::post('register',[TeacherAuthController::class, 'register']);
