@@ -21,7 +21,9 @@ class CategoryController extends Controller
             $q->where('category_id',$id);
         })->find($id);
 
-        return ControllerHelper::generateResponseApi(true,'تم عرض العاب القسم بنجاح', CategoryResource::make($category));
+        $category_data = CategoryResource::make($category);
+
+        return ControllerHelper::generateResponseApi(true,'تم عرض العاب القسم بنجاح', $category_data);
 
     }
 }
