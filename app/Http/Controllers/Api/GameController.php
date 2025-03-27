@@ -97,15 +97,15 @@ class GameController extends Controller
                 $randomWord = collect($category->words)->pluck('words')->flatten()->random();
                 $data = ['game' => $game->name, 'word' => $randomWord, 'category' => $category->name, 'type'=>$gameType];
 
-                $students = Cache::get('students', []);
+                $student = Cache::get('student', []);
 
                 if (Auth::guard('student')->check()) {
                     $studentId = Auth::guard('student')->id();
-                    $students[] = [
+                    $student[] = [
                         'student_id' => $studentId,
                         'randomWord' => $randomWord,
                         ];
-                    Cache::put('students', $students, now()->addHours(2));
+                    Cache::put('student', $student, now()->addHours(2));
                 }
                 return ControllerHelper::generateResponseApi(true, 'تم تشغيل لعبة البحث عن الاسماء بنجاح', $data, 200);
                 break;
@@ -201,7 +201,7 @@ class GameController extends Controller
 
         $studentId = Auth::guard('student')->id();
 
-        $student = collect(Cache::get('students', []))
+        $student = collect(Cache::get('student', []))
             ->firstWhere('student_id', $studentId);
 //        dd($student);
 
