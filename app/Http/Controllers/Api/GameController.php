@@ -94,7 +94,7 @@ class GameController extends Controller
                         null, 404);
                 }
 
-                $randomWord = collect($category->words)->pluck('words')->flatten()->random();
+                $randomWord = collect($category->words)->pluck('word')->flatten()->random();
                 $data = ['game' => $game->name, 'word' => $randomWord, 'category' => $category->name, 'type'=>$gameType];
 
                 $student = Cache::get('student', []);
@@ -138,7 +138,7 @@ class GameController extends Controller
                     return ControllerHelper::generateResponseApi(false, 'لا توجد كلمات متاحة لهذه اللعبة في هذا القسم.', null, 404);
                 }
 
-                $allWords = $category->words->pluck('words')->flatten();
+                $allWords = $category->words->pluck('word')->flatten();
 
                 $wordCount = $allWords->count();
 
