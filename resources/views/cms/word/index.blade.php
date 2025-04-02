@@ -69,7 +69,7 @@
 @section('scripts')
     <script src="{{asset('assets/plugins/custom/datatables/datatables.bundle.js')}}"></script>
     <!--begin::Custom Javascript(used for this page only)-->
-    <script src="{{asset('assets/js/cms/games/words/words.js')}}"></script>
+    <script src="{{asset('assets/js/cms/words/words.js')}}"></script>
     {{--    <script src="{{asset('assets/js/custom/utilities/modals/users-search.js')}}"></script>--}}
     <!--end::Custom Javascript-->
 @endsection
