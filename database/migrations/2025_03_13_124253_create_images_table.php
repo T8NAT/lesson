@@ -13,9 +13,8 @@ return new class extends Migration
     {
         Schema::create('images', function (Blueprint $table) {
             $table->id();
-            $table->string('images');
-            $table->foreignId('game_id');
-            $table->foreign('game_id')->references('id')->on('games');
+            $table->string('name');
+            $table->string('image');
             $table->timestamps();
         });
     }
