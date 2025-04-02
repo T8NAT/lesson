@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ControllerHelper;
+use App\Models\Image;
 use App\Models\Word;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class WordController extends Controller
 {
@@ -39,27 +43,83 @@ class WordController extends Controller
      */
     public function create()
     {
-        return view('cms.word.create');
+        $images = Image::query()->latest()->get();
+        return view('cms.word.create', compact('images'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'category_id' => 'required|exists:categories,id',
-            'words' => 'required|array',
-        ]);
+            'items' => 'required|array|min:1',
+            'items.*.word' => 'required|string|max:191',
+            // Ensure image_id exists in the images table if it's not null
+            'items.*.image_id' => 'nullable|integer|exists:images,id',
+//             'items.*.audio_path' => 'nullable|string|max:255',
+        ],
+            [
+                'category_id.required' => 'حقل القسم مطلوب.',
+                'items.required' => 'يجب إضافة مفردة واحدة على الأقل.',
+                'items.min' => 'يجب إضافة مفردة واحدة على الأقل.',
+                'items.*.word.required' => 'حقل المفردة (الكلمة) مطلوب لكل عنصر.',
+                'items.*.word.max' => 'يجب ألا يتجاوز طول المفردة 191 حرفًا.',
+                'items.*.image_id.exists' => 'معرف الصورة المحدد غير صالح.',
+            ]);
 
-        $data = $request->only(['category_id', 'words']);
-        $is_saved = Word::query()->create($data);
-        if ($is_saved) {
-            return ControllerHelper::generateResponse('success','تم اضافة الكلمات بنجاح');
-        }else{
-            return ControllerHelper::generateResponse('error','فشلت عملية الاضافة حاول مرة اخرى', 500);
+
+        if ($validator->fails()) {
+            return ControllerHelper::generateResponse('error', 'خطأ في البيانات المدخلة', 422);
+        }
+
+        $categoryId = $request->input('category_id');
+        $items = $request->input('items');
+
+        DB::beginTransaction();
+        try {
+            foreach ($items as $itemData) {
+                if (empty(trim($itemData['word']))) {
+                    continue;
+                }
+
+                Word::create([
+                    'category_id' => $categoryId,
+                    'word' => trim($itemData['word']),
+                    'image_id' => $itemData['image_id'] ?? null,
+                    'audio_path' => $itemData['audio_path'] ?? null,
+                ]);
+            }
+
+//            dd($request);
+
+            DB::commit();
+            return ControllerHelper::generateResponse('success', 'تمت إضافة المفردات بنجاح',201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error storing vocabulary items: ' . $e->getMessage());
+
+            return ControllerHelper::generateResponse('error', 'فشلت عملية الإضافة. حدث خطأ غير متوقع.', 500);
         }
     }
+//    public function store(Request $request)
+//    {
+//        $request->validate([
+//            'category_id' => 'required|exists:categories,id',
+//            'words' => 'required|array',
+//        ]);
+//
+//        $data = $request->only(['category_id', 'words']);
+//        $is_saved = Word::query()->create($data);
+//        if ($is_saved) {
+//            return ControllerHelper::generateResponse('success','تم اضافة الكلمات بنجاح');
+//        }else{
+//            return ControllerHelper::generateResponse('error','فشلت عملية الاضافة حاول مرة اخرى', 500);
+//        }
+//    }
 
     /**
      * Display the specified resource.
@@ -74,7 +134,9 @@ class WordController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $word = Word::query()->findOrFail($id);
+        $images = Image::query()->latest()->get();
+        return view('cms.word.edit', compact('word', 'images'));
     }
 
     /**
@@ -82,7 +144,58 @@ class WordController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->request->add(['id' => $id]);
+        $validator = Validator::make($request->all(), [
+            'category_id' => 'required|exists:categories,id',
+            'items' => 'required|array|min:1',
+            'items.*.word' => 'required|string|max:191',
+            // Ensure image_id exists in the images table if it's not null
+            'items.*.image_id' => 'nullable|integer|exists:images,id',
+            'items.*.audio_path' => 'nullable|string|max:255',
+        ],
+            [
+                'category_id.required' => 'حقل القسم مطلوب.',
+                'items.required' => 'يجب إضافة مفردة واحدة على الأقل.',
+                'items.min' => 'يجب إضافة مفردة واحدة على الأقل.',
+                'items.*.word.required' => 'حقل المفردة (الكلمة) مطلوب لكل عنصر.',
+                'items.*.word.max' => 'يجب ألا يتجاوز طول المفردة 191 حرفًا.',
+                'items.*.image_id.exists' => 'معرف الصورة المحدد غير صالح.',
+            ]);
+
+
+        if ($validator->fails()) {
+            return ControllerHelper::generateResponse('error', 'خطأ في البيانات المدخلة', 422);
+        }
+
+        $categoryId = $request->input('category_id');
+        $items = $request->input('items');
+
+        DB::beginTransaction();
+        try {
+            foreach ($items as $itemData) {
+                if (empty(trim($itemData['word']))) {
+                    continue;
+                }
+
+                Word::update([
+                    'category_id' => $categoryId,
+                    'word' => trim($itemData['word']),
+                    'image_id' => $itemData['image_id'] ?? null,
+                    'audio_path' => $itemData['audio_path'] ?? null,
+                ]);
+            }
+
+//            dd($request);
+
+            DB::commit();
+            return ControllerHelper::generateResponse('success', 'تم تعديل المفردات بنجاح',201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error storing vocabulary items: ' . $e->getMessage());
+
+            return ControllerHelper::generateResponse('error', 'فشلت عملية الإضافة. حدث خطأ غير متوقع.', 500);
+        }
     }
 
     /**
@@ -90,6 +203,13 @@ class WordController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $word = Word::query()->find($id);
+        $is_Deleted = $word->delete();
+        if ($is_Deleted){
+            return ControllerHelper::generateResponse('success','تم حذف الكلمة بنجاح',201);
+        }else{
+            return ControllerHelper::generateResponse('error','فشلت عملية الحذف، حاول مرة اخرى',500);
+
+        }
     }
 }
