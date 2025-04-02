@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Image extends Model
 {
 protected $fillable = [
-    'images',
-    'game_id'
+    'name',
+    'image',
 ];
-    public function game(): BelongsTo
+    public function word(): BelongsTo
     {
-        return $this->belongsTo(Game::class);
+        return $this->belongsTo(Word::class);
     }
 }
