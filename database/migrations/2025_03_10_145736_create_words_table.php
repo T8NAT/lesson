@@ -13,9 +13,13 @@ return new class extends Migration
     {
         Schema::create('words', function (Blueprint $table) {
             $table->id();
+            $table->string('word');
             $table->foreignId('category_id');
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
-            $table->json('words');
+            $table->foreignId('image_id')->nullable();
+            $table->foreign('image_id')->references('id')->on('images')->onDelete('cascade');
+            $table->string('audio')->nullable();
+
             $table->timestamps();
         });
     }
