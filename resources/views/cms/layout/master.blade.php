@@ -1107,6 +1107,16 @@
                                                     <!--end:Menu link-->
                                                 </div>
 {{--                                            @endif--}}
+                                                <div class="menu-item">
+                                                    <!--begin:Menu link-->
+                                                    <a class="menu-link" href="{{route('images.index')}}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+                                                        <span class="menu-title">{{'قائمة الصور'}}</span>
+                                                    </a>
+                                                    <!--end:Menu link-->
+                                                </div>
                                             <!--end:Menu item-->
                                                 <div class="menu-item">
                                                     <!--begin:Menu link-->
