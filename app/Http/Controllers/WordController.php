@@ -149,7 +149,6 @@ class WordController extends Controller
             'category_id' => 'required|exists:categories,id',
             'items' => 'required|array|min:1',
             'items.*.word' => 'required|string|max:191',
-            // Ensure image_id exists in the images table if it's not null
             'items.*.image_id' => 'nullable|integer|exists:images,id',
             'items.*.audio_path' => 'nullable|string|max:255',
         ],
