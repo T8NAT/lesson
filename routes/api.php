@@ -30,6 +30,7 @@ Route::namespace('api/')->prefix('games/')->group(function (){
 
     Route::post('check-image/{gameId}', [GameController::class, 'checkImage'])->middleware('auth:student');
     Route::post('check-game', [GameController::class, 'checkGame'])->middleware('auth:student');
+    Route::post('check-answer', [GameController::class, 'checkAnswer'])->middleware('auth:student');
 });
 
 Route::namespace('api/')->prefix('categories/')->group(function (){
