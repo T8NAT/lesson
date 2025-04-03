@@ -164,13 +164,18 @@ class GameController extends Controller
 
                 if (Auth::guard('student')->check()) {
                     $studentId = Auth::guard('student')->id();
-                    Cache::put('correct_word_' . $studentId, $correctWord, now()->addHours(2));
+                    $student[] = [
+                        'student_id' => $studentId,
+                        'correct_word' => $correctWord,
+                    ];
+                    Cache::put('student', $student, now()->addHours(2));
                 }
 
                 return ControllerHelper::generateResponseApi(true, 'تم تشغيل لعبة صورة وكلمات بنجاح', $data, 200);
                 break;
 
             case 'صوت':
+                $category = $game->categories()->where('categories.id', $category_id)->first();
                         break;
 
                         default:
@@ -179,8 +184,30 @@ class GameController extends Controller
 
     }
 
-    public function checkCorrectWordImage(Request $request)
+    public function checkAnswer(Request $request)
     {
+        $studentId = Auth::guard('student')->id();
+
+        $student = collect(Cache::get('student', []))
+            ->firstWhere('student_id', $studentId);
+
+        if ($student && isset($student['correct_word'])) {
+            $correctWord = $student['correct_word'];
+        }else{
+            return ControllerHelper::generateResponseApi(false, 'لم يتم العثور على الكلمة الخاصة بالطالب في الجلسة.', null, 400);
+
+        }
+
+        if ($request->word == $correctWord) {
+            return ControllerHelper::generateResponseApi(true, 'الاجابة صحيحة', null);
+
+        }else{
+            $correctWord =[
+                'الاجابة الصحيحة' => $correctWord,
+            ];
+            return ControllerHelper::generateResponseApi(false, 'الاجابة خاطئة', $correctWord, 422);
+
+        }
 
     }
 
