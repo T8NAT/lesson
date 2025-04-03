@@ -18,16 +18,13 @@ class WordController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $query = Word::query()->latest();
+            $query = Word::query()->with('category')->latest('words.created_at');
             return datatables()->of($query)
                 ->addColumn('actions', function ($row) {
                     return view('cms.word.partials.actions', compact('row'))->render();
                 })
                 ->addColumn('checkbox', function ($row) {
                     return '<input class="form-check-input" type="checkbox"  id="select-all"  data-kt-check-target="#kt_word_table .form-check-input" value="1" data-id="'.$row->id.'">';
-                })
-                ->addColumn('category', function ($row) {
-                    return $row->category->name;
                 })
                 ->rawColumns(['actions', 'checkbox'])
                 ->make(true);
