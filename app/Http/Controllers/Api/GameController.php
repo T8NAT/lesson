@@ -9,6 +9,7 @@ use App\Http\Resources\GameResource;
 use App\Http\Resources\ImagesResource;
 use App\Models\Category;
 use App\Models\Game;
+use App\Models\Word;
 use App\Services\UploadService;
 use Google\Cloud\Vision\V1\AnnotateImageRequest;
 use Google\Cloud\Vision\V1\BatchAnnotateImagesRequest;
@@ -110,62 +111,54 @@ class GameController extends Controller
                 return ControllerHelper::generateResponseApi(true, 'تم تشغيل لعبة البحث عن الاسماء بنجاح', $data, 200);
                 break;
 
-//                case 'صورة وكلمات' :
-//                    $category = $game->categories()->where('categories.id', $category_id)->first();
-//                    if (!$category || !$category->words) {
-//                        return ControllerHelper::generateResponseApi(false, 'لا توجد كلمات متاحة لهذه اللعبة في هذا القسم.',
-//                            null, 404);
-//                    }
-//
-//                    $randomWords = collect($category->words)->flatten()->random();
-//                    $data = ['game' => GameResource::make($game), 'words' => $randomWords,];
-//
-//                    if (Auth::guard('student')->check()) {
-//                        $studentId = Auth::guard('student')->id();
-//                        $students[] = [
-//                            'student_id' => $studentId,
-//                            'correctWord' => '',
-//                        ];
-//                        Cache::put('students', $students, now()->addHours(2));
-//                    }
-//                    return ControllerHelper::generateResponseApi(true, 'تم تشغيل لعبة الكلمات بنجاح', $data, 200);
-//                    break;
-
             case 'صورة وكلمات':
                 $category = $game->categories()->where('categories.id', $category_id)->first();
 
-                if (!$category || !$category->words) {
-                    return ControllerHelper::generateResponseApi(false, 'لا توجد كلمات متاحة لهذه اللعبة في هذا القسم.', null, 404);
+                if (!$category) {
+                    return ControllerHelper::generateResponseApi(false, 'القسم غير مرتبط بهذه اللعبة.', null, 404);
                 }
 
-                $allWords = $category->words->pluck('word')->flatten();
+                $possibleCorrectItems = Word::where('category_id', $category_id)
+                    ->whereNotNull('image_id')
+                    ->with('image')
+                    ->get();
 
-                $wordCount = $allWords->count();
-
-                if ($wordCount < 4) {
-                    return ControllerHelper::generateResponseApi(false, 'لا يوجد ما يكفي من الكلمات في هذه الفئة للعب هذه اللعبة. يجب أن يكون هناك 4 كلمات على الأقل.', null, 400);
+                if ($possibleCorrectItems->isEmpty()) {
+                    return ControllerHelper::generateResponseApi(false, 'لا توجد كلمات مرتبطة بصور في هذا القسم لبدء اللعبة.', null, 404);
                 }
 
-                $correctWord = $allWords->random();
+                $correctItem = $possibleCorrectItems->random();
+                $correctWord = $correctItem->word;
 
-                $incorrectWords = collect([]);
-                while ($incorrectWords->count() < 3) {
-                    $randomWord = $allWords->random();
-                    if ($randomWord !== $correctWord && !$incorrectWords->contains($randomWord)) {
-                        $incorrectWords->push($randomWord);
-                    }
+                if (!$correctItem->image || !$correctItem->image->image) {
+                    Log::error("Image relationship or path is missing for Word ID: " . $correctItem->id . " despite image_id being set.");
+                    return ControllerHelper::generateResponseApi(false, 'حدث خطأ: لم يتم العثور على ملف الصورة المرتبط بالكلمة الصحيحة.', null, 500);
                 }
+                $correctImagePath = $correctItem->image->image;
+
+
+                $allWordsInCategory = Word::where('category_id', $category_id)->pluck('word');
+
+                if ($allWordsInCategory->count() < 4) {
+                    return ControllerHelper::generateResponseApi(false, 'لا يوجد عدد كافٍ من الكلمات المختلفة في هذا القسم للعب (مطلوب 4 على الأقل).', null, 400);
+                }
+
+                $otherWords = $allWordsInCategory->filter(function ($word) use ($correctWord) {
+                    return $word !== $correctWord;
+                });
+
+                if ($otherWords->count() < 3) {
+                    return ControllerHelper::generateResponseApi(false, 'لا يوجد عدد كافٍ من الكلمات *المختلفة* عن الكلمة الصحيحة في هذا القسم (مطلوب 3).', null, 400);
+                }
+
+                $incorrectWords = $otherWords->random(3);
 
                 $words = collect([$correctWord])->merge($incorrectWords)->shuffle();
 
-//                $wordRecord = $category->words()->whereJsonContains('words', $correctWord)->first();
-
-//                $image = $wordRecord ? $wordRecord->image : null;
-
                 $data = [
                     'game' => $game->name,
-                    'image' => ImagesResource::collection($game->images),
-                    'words' => $words,
+                    'image_url' => url(Storage::url($correctImagePath)),
+                    'words' => $words->values()->all(),
                     'correct_word' => $correctWord,
                 ];
 
@@ -174,9 +167,8 @@ class GameController extends Controller
                     Cache::put('correct_word_' . $studentId, $correctWord, now()->addHours(2));
                 }
 
-                return ControllerHelper::generateResponseApi(true, 'تم تشغيل لعبة الكلمات بنجاح', $data, 200);
+                return ControllerHelper::generateResponseApi(true, 'تم تشغيل لعبة صورة وكلمات بنجاح', $data, 200);
                 break;
-
 
             case 'صوت':
                         break;
@@ -184,6 +176,11 @@ class GameController extends Controller
                         default:
                             return ControllerHelper::generateResponseApi(false, 'نوع اللعبة غير مدعوم', null, 400);
         }
+
+    }
+
+    public function checkCorrectWordImage(Request $request)
+    {
 
     }
 
