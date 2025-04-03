@@ -45,13 +45,10 @@ var KTAppWords = function () {
                     type: "GET",
                 },
                 columns: [
-                    // {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    // {data: 'id', name: 'id'},
                     { data: "checkbox", orderable: false, searchable: false },
-                    {data: 'word', name: 'word'},
-                    {data: 'category', name: 'name'},
-                    // {data: 'status', name: 'status'},
-                    {data: 'actions', name: 'actions', orderable: true, searchable: true},
+                    { data: "word", name: "word" },
+                    { data: "category.name", name: "category.name" },
+                    { data: "actions", name: "actions", orderable: true, searchable: true },
                 ],
                 order: [[1, "asc"]]
 
