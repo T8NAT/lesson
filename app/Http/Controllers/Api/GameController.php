@@ -176,10 +176,12 @@ class GameController extends Controller
 
             case 'صوت':
                 $category = $game->categories()->where('categories.id', $category_id)->first();
-                        break;
-
-                        default:
-                            return ControllerHelper::generateResponseApi(false, 'نوع اللعبة غير مدعوم', null, 400);
+                if (!$category) {
+                    return ControllerHelper::generateResponseApi(false, 'القسم غير مرتبط بهذه اللعبة.', null, 404);
+                }
+                break;
+                default:
+                    return ControllerHelper::generateResponseApi(false, 'نوع اللعبة غير مدعوم', null, 400);
         }
 
     }
