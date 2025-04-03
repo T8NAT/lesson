@@ -224,7 +224,6 @@ class GameController extends Controller
         $imagePath = Storage::disk('public')->put('temp_images', $imageFile);
         $fullImagePath = storage_path('app/public/' . $imagePath);
 
-
         $studentId = Auth::guard('student')->id();
 
         $student = collect(Cache::get('student', []))
