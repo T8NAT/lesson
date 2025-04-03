@@ -22,7 +22,7 @@ class Word extends Model
         return $this->belongsTo(Category::class);
 
     }
-    public function word(): BelongsTo{
-        return $this->belongsTo(Word::class);
+    public function image(): BelongsTo{
+        return $this->belongsTo(Image::class);
     }
 }
