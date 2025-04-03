@@ -46,9 +46,9 @@ var KTAppWords = function () {
                 },
                 columns: [
                     { data: "checkbox", orderable: false, searchable: false },
-                    { data: "word", name: "word" },
-                    { data: "category.name", name: "category.name" },
-                    { data: "actions", name: "actions", orderable: true, searchable: true },
+                    { data: "word", name: "words.word", searchable: true },
+                    { data: "category.name", name: "category.name", searchable: true },
+                    { data: "actions", name: "actions", orderable: false, searchable: false }
                 ],
                 order: [[1, "asc"]]
 
@@ -120,10 +120,17 @@ var KTAppWords = function () {
         }
     };
 }();
+$(document).ready(function () {
+    let table = $("#kt_word_table").DataTable();
 
+    $('input[data-kt-word-filter="search"]').on('keyup', function () {
+        table.search(this.value).draw();
+    });
+});
 $('#kt_word_table').on('draw.dt', function () {
     KTMenu.createInstances();
 });
 KTUtil.onDOMContentLoaded(function () {
     KTAppWords.init();
+
 });
