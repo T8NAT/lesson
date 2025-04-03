@@ -26,9 +26,6 @@ class WordController extends Controller
                 ->addColumn('checkbox', function ($row) {
                     return '<input class="form-check-input" type="checkbox"  id="select-all"  data-kt-check-target="#kt_word_table .form-check-input" value="1" data-id="'.$row->id.'">';
                 })
-                ->addColumn('words', function ($row) {
-                    return $row->words;
-                })
                 ->addColumn('category', function ($row) {
                     return $row->category->name;
                 })
