@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TypeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\AuthController;
@@ -31,8 +32,9 @@ Route::prefix('dashboard')->middleware(['auth:user,admin'])->group(function () {
         'teachers'         =>   TeacherController::class,
         'games'            =>   GameController::class,
         'words'            =>   WordController::class,
-        'types'            =>    TypeController::class,
-        'images'           =>    ImageController::class,
+        'types'            =>   TypeController::class,
+        'images'           =>   ImageController::class,
+        'students'         =>   StudentController::class,
     ]);
 
     Route::get('get-categories',[CategoryController::class,'getCategories'])->name('getCategories');
