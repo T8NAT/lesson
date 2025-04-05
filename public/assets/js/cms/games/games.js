@@ -44,16 +44,49 @@ var KTAppGames = function () {
                     url: '/dashboard/games/',
                     type: "GET",
                 },
+
                 columns: [
-                    // {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    // {data: 'id', name: 'id'},
-                    { data: "checkbox", orderable: false, searchable: false },
-                    {data: 'name', name: 'name'},
-                    {data: 'type', name: 'name'},
-                    {data: 'categories', name: 'name'},
-                    {data: 'status', name: 'status'},
-                    {data: 'actions', name: 'actions', orderable: true, searchable: true},
+                    { data: 'id', name: 'id', orderable: false, searchable: false },
+                    { data: 'partials', name: 'partials', orderable: false, searchable: false },
+                    { data: 'name', name: 'name' },
+                    { data: 'type.name', name: 'type.name',orderable: false, searchable: false  },
+                    { data: 'categories', name: 'categories',orderable: false, searchable: false },
+                    { data: 'status', name: 'status' },
+                    { data: 'actions', name: 'actions', orderable: false, searchable: false }
                 ],
+                columnDefs: [
+                    {
+                        targets: 0,
+                        render: function (data, type, row) {
+                            return `<div class="form-check form-check-sm form-check-custom form-check-solid">
+                        <input class="form-check-input" type="checkbox" value="${data}" />
+                    </div>`;
+                        }
+                    },
+                    {
+                        // Game Name (can add description if available)
+                        targets: 2,
+                        render: function(data, type, row) {
+                            // Optional: Add description if sent from controller
+                            // const description = row.description ? `<span class="text-muted d-block fs-7">${row.description}</span>` : '';
+                            return `<div class="d-flex flex-column">
+                        <span class="text-gray-800 text-hover-primary mb-1">${data}</span>
+
+                    </div>`;
+                        }
+                    },
+                    {
+                        // Game Type (Using colored badge based on type_color)
+                        targets: 3,
+                        render: function (data, type, row) {
+                            // Use the color provided by the controller, default to 'secondary' if none
+                            const badgeColor = row.type_color || 'secondary';
+                            return `<span class="badge badge-${badgeColor}">${data}</span>`;
+                        }
+                    },
+
+                ],
+
                 order: [[1, "asc"]]
 
             });
