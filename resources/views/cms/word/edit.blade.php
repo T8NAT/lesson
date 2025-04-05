@@ -31,7 +31,7 @@
                 </div>
             @endif
 
-            <form id="kt_add_word_form" action="{{ route('words.update',$word->id) }}" enctype="multipart/form-data" method="POST" class="form d-flex flex-column flex-lg-row" data-kt-redirect="{{ route('words.create') }}">
+            <form id="kt_add_word_form" action="{{ route('words.update',$word->id) }}" enctype="multipart/form-data" method="POST" class="form d-flex flex-column flex-lg-row" data-kt-redirect="{{ route('words.update',$word->id) }}">
                 @csrf
                 @method('PUT')
                 <!--begin::Aside column-->
@@ -152,7 +152,7 @@
                 </button>
             </div>
 
-            {{--             <div class="col-md-4"> <label>{{'الصوت (اختياري)'}}:</label> <input type="file" name="items[__INDEX__][audio_path]" class="form-control"></div>--}}
+            <div class="col-md-4"> <label>{{'الصوت (اختياري)'}}:</label> <input type="file"  name="items[__INDEX__][audio]" class="form-control"></div>
         </div>
     </div>
 @endsection
