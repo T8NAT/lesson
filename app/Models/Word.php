@@ -12,6 +12,7 @@ class Word extends Model
         'word',
         'category_id',
         'image_id',
+        'audio',
     ];
 
 //    protected $casts = [
