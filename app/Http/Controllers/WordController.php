@@ -47,12 +47,17 @@ class WordController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+       $request->validate([
             'category_id' => 'required|exists:categories,id',
             'items' => 'required|array|min:1',
             'items.*.word' => 'required|string|max:191',
             'items.*.image_id' => 'nullable|integer|exists:images,id',
-             'items.*.audio_path' => 'nullable|string|max:255',
+            'items.*.audio' => [
+                'nullable',
+                'file',
+                'mimes:mp3,wav,ogg,m4a',
+                'max:2024',
+            ],
         ],
             [
                 'category_id.required' => 'حقل القسم مطلوب.',
@@ -61,30 +66,49 @@ class WordController extends Controller
                 'items.*.word.required' => 'حقل المفردة (الكلمة) مطلوب لكل عنصر.',
                 'items.*.word.max' => 'يجب ألا يتجاوز طول المفردة 191 حرفًا.',
                 'items.*.image_id.exists' => 'معرف الصورة المحدد غير صالح.',
+                'items.*.audio.file' => 'يجب أن يكون حقل الصوت ملفًا.',
+                'items.*.audio.mimes' => 'نوع ملف الصوت غير مدعوم (مسموح: mp3, wav, ogg, m4a).', 
+                'items.*.audio.max' => 'يجب ألا يتجاوز حجم ملف الصوت 2 ميجابايت.',
             ]);
-
-
-        if ($validator->fails()) {
-            return ControllerHelper::generateResponse('error', 'خطأ في البيانات المدخلة', 422);
-        }
 
         $categoryId = $request->input('category_id');
         $items = $request->input('items');
 
         DB::beginTransaction();
         try {
-            foreach ($items as $itemData) {
+            foreach ($items as $index=>$itemData) {
                 if (empty(trim($itemData['word']))) {
                     continue;
+                }
+                $audioPath = null;
+
+                $audioInputName = "items.{$index}.audio";
+
+                if ($request->hasFile($audioInputName) && $request->file($audioInputName)->isValid()) {
+                    $audioFile = $request->file($audioInputName);
+
+                    $storagePath = 'audio/words';
+
+                    $audioPath = $audioFile->store($storagePath, 'public');
+
+                    Log::info("Stored audio for item index {$index} at path: {$audioPath}");
+
+                    if (!$audioPath) {
+                        throw new \Exception("Failed to store audio file for item at index {$index}.");
+                    }
+                } elseif ($request->hasFile($audioInputName) && !$request->file($audioInputName)->isValid()) {
+                    Log::error("Invalid audio file uploaded for item at index {$index}. Error code: " . $request->file($audioInputName)->getError());
+
                 }
 
                 Word::create([
                     'category_id' => $categoryId,
                     'word' => trim($itemData['word']),
                     'image_id' => $itemData['image_id'] ?? null,
-                    'audio_path' => $itemData['audio_path'] ?? null,
+                    'audio' => $audioPath,
                 ]);
             }
+
 
 //            dd($request);
 
@@ -94,6 +118,7 @@ class WordController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error storing vocabulary items: ' . $e->getMessage());
+            Log::debug('Request data during error: ', $request->except(['items.*.audio'])); // Exclude file content
 
             return ControllerHelper::generateResponse('error', 'فشلت عملية الإضافة. حدث خطأ غير متوقع.', 500);
         }
@@ -143,7 +168,7 @@ class WordController extends Controller
             'items' => 'required|array|min:1',
             'items.*.word' => 'required|string|max:191',
             'items.*.image_id' => 'nullable|integer|exists:images,id',
-            'items.*.audio_path' => 'nullable|string|max:255',
+            'items.audio' => 'nullable|string|max:255',
         ],
             [
                 'category_id.required' => 'حقل القسم مطلوب.',
@@ -162,6 +187,7 @@ class WordController extends Controller
         $categoryId = $request->input('category_id');
         $items = $request->input('items');
 
+        $word = Word::query()->findOrFail($id);
         DB::beginTransaction();
         try {
             foreach ($items as $itemData) {
@@ -169,11 +195,11 @@ class WordController extends Controller
                     continue;
                 }
 
-                Word::update([
+                $word->update([
                     'category_id' => $categoryId,
                     'word' => trim($itemData['word']),
                     'image_id' => $itemData['image_id'] ?? null,
-                    'audio_path' => $itemData['audio_path'] ?? null,
+                    'audio' => $itemData['audio'] ?? null,
                 ]);
             }
 
