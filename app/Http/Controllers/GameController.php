@@ -20,21 +20,18 @@ class GameController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $query = Game::query()->latest();
+            $query = Game::query()->with(['type','categories'])->latest();
             return datatables()->of($query)
                 ->addColumn('actions', function ($row) {
                     return view('cms.game.partials.actions', compact('row'))->render();
                 })
                 ->addColumn('checkbox', function ($row) {
-                    return '<input class="form-check-input" type="checkbox"  id="select-all"  data-kt-check-target="#kt_ecommerce_category_table .form-check-input" value="1" data-id="'.$row->id.'">';
+                    return '<input class="form-check-input" type="checkbox"  id="select-all"  data-kt-check-target="#kt_game_table .form-check-input" value="1" data-id="'.$row->id.'">';
                 })
-                ->addColumn('name', function ($row) {
-                    return $row->name;
+                ->addColumn('partials', function ($row) {
+                    return view('cms.game.partials.partials', compact('row'))->render();
                 })
-                ->addColumn('type', function ($row) {
-                    return $row->type->name;
-                })
-                ->addColumn('categories', function ($row) {
+                ->editColumn('categories', function ($row) {
                     return $row->categories->pluck('name')->implode(', ');
                 })
                 ->addColumn('status', function ($row) {
@@ -44,7 +41,7 @@ class GameController extends Controller
                         return '<div class="badge badge-light-danger">'. 'غير فعال' .'</div>';
                     }
                 })
-                ->rawColumns(['actions', 'checkbox','status'])
+                ->rawColumns(['actions', 'checkbox','status','partials'])
                 ->make(true);
         }
         return view('cms.game.index');
