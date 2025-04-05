@@ -119,7 +119,7 @@ class WordController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error storing vocabulary items: ' . $e->getMessage());
-            Log::debug('Request data during error: ', $request->except(['items.*.audio'])); 
+            Log::debug('Request data during error: ', $request->except(['items.*.audio']));
 
             return ControllerHelper::generateResponse('error', 'فشلت عملية الإضافة. حدث خطأ غير متوقع.', 500);
         }
