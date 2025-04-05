@@ -1,494 +1,255 @@
 @extends('cms.layout.master')
-@section('toolbar-title','Lesson App')
-@section('breadcrumb','لوحة التحكم')
-    @section('content')
+@section('toolbar-title', 'لوحة تحكم تطبيق الألعاب')
+@section('breadcrumb', 'لوحة التحكم الرئيسية')
+
+@section('content')
     <div id="kt_app_content" class="app-content flex-column-fluid">
         <!--begin::Content container-->
         <div id="kt_app_content_container" class="app-container container-fluid">
-            <!--begin::Row-->
+
+            <!--begin::Row: Key Statistics -->
+            <div class="row g-5 g-xl-8 mb-8">
+                <!-- Stat: Students -->
+                <div class="col-xl-3 col-md-6">
+                    <div class="card card-xl-stretch bg-light-success">
+                        <div class="card-body d-flex align-items-center ps-xl-8">
+                            <i class="ki-duotone ki-profile-user fs-2x text-success me-5"> <span class="path1"></span> <span class="path2"></span> <span class="path3"></span> </i>
+                            <div class="d-flex flex-column">
+                                <span class="fs-2hx fw-bold text-dark me-2 lh-1 ls-n2">{{ $studentCount ?? 0 }}</span>
+                                <span class="text-gray-700 fw-semibold fs-6">طالب مسجل</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Stat: Teachers -->
+                <div class="col-xl-3 col-md-6">
+                    <div class="card card-xl-stretch bg-light-info">
+                        <div class="card-body d-flex align-items-center ps-xl-8">
+                            <i class="ki-duotone ki-user-tie fs-2x text-info me-5"> <span class="path1"></span> <span class="path2"></span> <span class="path3"></span> <span class="path4"></span> <span class="path5"></span> </i>
+                            <div class="d-flex flex-column">
+                                <span class="fs-2hx fw-bold text-dark me-2 lh-1 ls-n2">{{ $teacherCount ?? 0 }}</span>
+                                <span class="text-gray-700 fw-semibold fs-6">معلم متاح</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Stat: Games -->
+                <div class="col-xl-3 col-md-6">
+                    <div class="card card-xl-stretch bg-light-warning">
+                        <div class="card-body d-flex align-items-center ps-xl-8">
+                            <i class="ki-duotone ki-game fs-2x text-warning me-5"> <span class="path1"></span> <span class="path2"></span> </i>
+                            <div class="d-flex flex-column">
+                                <span class="fs-2hx fw-bold text-dark me-2 lh-1 ls-n2">{{ $gameCount ?? 0 }}</span>
+                                <span class="text-gray-700 fw-semibold fs-6">لعبة متاحة</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Stat: Vocabulary Items -->
+                <div class="col-xl-3 col-md-6">
+                    <div class="card card-xl-stretch bg-light-danger">
+                        <div class="card-body d-flex align-items-center ps-xl-8">
+                            <i class="ki-duotone ki-book-open fs-2x text-danger me-5"> <span class="path1"></span> <span class="path2"></span> </i>
+                            <div class="d-flex flex-column">
+                                <span class="fs-2hx fw-bold text-dark me-2 lh-1 ls-n2">{{ $vocabularyCount ?? 0 }}</span>
+                                <span class="text-gray-700 fw-semibold fs-6">مفردة تعليمية</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end::Row: Key Statistics -->
+
+
+            <!--begin::Row: Content Management & Activity -->
             <div class="row g-5 g-xl-8">
-                <!--begin::Col-->
-                <div class="col-xl-12">
-                    <!--begin::Mixed Widget 2-->
-                    <div class="card card-xl-stretch mb-5 mb-xl-8">
+                <!--begin::Col: Quick Actions & Content Links -->
+                <div class="col-xl-5">
+                    <div class="card card-xl-stretch mb-xl-8">
                         <!--begin::Header-->
-                        <div class="card-header border-0 bg-primary py-5">
-                            <h3 class="card-title fw-bold text-white">Lesson App</h3>
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label fw-bold fs-3 mb-1">إدارة المحتوى</span>
+                                <span class="text-muted mt-1 fw-semibold fs-7">روابط سريعة لإدارة محتوى التطبيق</span>
+                            </h3>
                             <div class="card-toolbar">
                                 <!--begin::Menu-->
-                                <button type="button" class="btn btn-sm btn-icon btn-color-white btn-active-white btn-active-color- border-0 me-n3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                    <i class="ki-duotone ki-category fs-6">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                        <span class="path4"></span>
-                                    </i>
+                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                    <i class="ki-duotone ki-plus-square fs-2"> <span class="path1"></span> <span class="path2"></span> <span class="path3"></span> </i>
                                 </button>
-                                <!--begin::Menu 3-->
-                                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true">
-                                    <!--begin::Heading-->
-                                    <div class="menu-item px-3">
-                                        <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">اختصارات</div>
+                                <!--begin::Menu 1-->
+                                <div class="menu menu-sub menu-sub-dropdown w-250px w-md-300px" data-kt-menu="true" id="kt_menu_641ac41e7792c">
+                                    <!--begin::Header-->
+                                    <div class="px-7 py-5">
+                                        <div class="fs-5 text-dark fw-bold">إضافة جديد</div>
                                     </div>
-                                    <!--end::Heading-->
-                                    <!--begin::Menu item-->
-                                    <div class="menu-item px-3">
-                                        <a href="{{route('categories.create')}}" class="menu-link px-3">انشاء قسم</a>
-                                    </div>
-                                    <!--end::Menu item-->
-                                    <!--begin::Menu item-->
-                                    <div class="menu-item px-3">
-                                        <a href="{{route('teachers.create')}}" class="menu-link flex-stack px-3">اضافة معلم
-                                            <span class="ms-2" data-bs-toggle="tooltip" title="يمكنك اضافة معلم جديد">
-																	<i class="ki-duotone ki-information fs-6">
-																		<span class="path1"></span>
-																		<span class="path2"></span>
-																		<span class="path3"></span>
-																	</i>
-																</span></a>
-                                    </div>
-                                    <!--end::Menu item-->
-                                    <!--begin::Menu item-->
-                                    <div class="menu-item px-3">
-                                        <a href="{{route('categories.create')}}" class="menu-link px-3">انشاء قسم</a>
-                                    </div>
-                                    <!--end::Menu item-->
-                                    <!--begin::Menu item-->
-                                    <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
-                                        <a href="#" class="menu-link px-3">
-                                            <span class="menu-title">المستخدمين</span>
-                                            <span class="menu-arrow"></span>
-                                        </a>
-                                        <!--begin::Menu sub-->
-                                        <div class="menu-sub menu-sub-dropdown w-175px py-4">
-                                            <!--begin::Menu item-->
-                                            <div class="menu-item px-3">
-                                                <a href="{{route('admins.index')}}" class="menu-link px-3">المدراء</a>
-                                            </div>
-                                            <!--end::Menu item-->
-                                            <!--begin::Menu item-->
-                                            <div class="menu-item px-3">
-                                                <a href="{{route('teachers.index')}}" class="menu-link px-3">المعلمين</a>
-                                            </div>
-                                            <!--end::Menu item-->
-                                            <!--begin::Menu item-->
-                                            <div class="menu-item px-3">
-                                                <a href="" class="menu-link px-3">الطلاب</a>
-                                            </div>
-                                            <!--end::Menu item-->
-                                            <!--begin::Menu separator-->
-                                            <div class="separator my-2"></div>
-                                            <!--end::Menu separator-->
-                                            <!--begin::Menu item-->
-{{--                                            <div class="menu-item px-3">--}}
-{{--                                                <div class="menu-content px-3">--}}
-{{--                                                    <!--begin::Switch-->--}}
-{{--                                                    <label class="form-check form-switch form-check-custom form-check-solid">--}}
-{{--                                                        <!--begin::Input-->--}}
-{{--                                                        <input class="form-check-input w-30px h-20px" type="checkbox" value="1" checked="checked" name="notifications" />--}}
-{{--                                                        <!--end::Input-->--}}
-{{--                                                        <!--end::Label-->--}}
-{{--                                                        <span class="form-check-label text-muted fs-6">Recuring</span>--}}
-{{--                                                        <!--end::Label-->--}}
-{{--                                                    </label>--}}
-{{--                                                    <!--end::Switch-->--}}
-{{--                                                </div>--}}
-{{--                                            </div>--}}
-                                            <!--end::Menu item-->
+                                    <!--end::Header-->
+                                    <!--begin::Menu separator-->
+                                    <div class="separator border-gray-200"></div>
+                                    <!--end::Menu separator-->
+                                    <!--begin::Form-->
+                                    <div class="px-7 py-5">
+                                        <div class="mb-5">
+                                            <a href="{{route('games.create')}}" class="btn btn-light-primary w-100 mb-2"> <i class="ki-duotone ki-game fs-5 me-2"></i> إضافة لعبة</a> {{-- Update route --}}
+                                            <a href="{{route('categories.create')}}" class="btn btn-light-info w-100 mb-2"> <i class="ki-duotone ki-folder fs-5 me-2"></i> إضافة قسم</a>
+                                            <a href="{{route('words.create')}}" class="btn btn-light-danger w-100 mb-2"> <i class="ki-duotone ki-book-open fs-5 me-2"></i> إضافة مفردات</a> {{-- Assuming route is words.create --}}
+                                            <a href="{{route('images.create')}}" class="btn btn-light-warning w-100 mb-2"> <i class="ki-duotone ki-file-up fs-5 me-2"></i> إضافة صور</a> {{-- Add route for image management --}}
+                                            {{-- <a href="#" class="btn btn-light-success w-100 mb-2"> <i class="ki-duotone ki-audio-square fs-5 me-2"></i> إضافة صوتيات</a> --}} {{-- If needed later --}}
                                         </div>
-                                        <!--end::Menu sub-->
+                                        <div class="separator border-gray-200 mb-5"></div>
+                                        <div class="mb-2">
+                                            <a href="{{route('teachers.create')}}" class="btn btn-light-dark w-100 mb-2"> <i class="ki-duotone ki-user-tie fs-5 me-2"></i> إضافة معلم</a>
+                                            <a href="{{route('students.create')}}" class="btn btn-light-dark w-100"> <i class="ki-duotone ki-profile-user fs-5 me-2"></i> إضافة طالب</a> {{-- Add route for student management --}}
+                                        </div>
                                     </div>
-                                    <!--end::Menu item-->
-                                    <!--begin::Menu item-->
-                                    <div class="menu-item px-3 my-1">
-                                        <a href="#" class="menu-link px-3">الاعدادات</a>
-                                    </div>
-                                    <!--end::Menu item-->
+                                    <!--end::Form-->
                                 </div>
-                                <!--end::Menu 3-->
+                                <!--end::Menu 1-->
                                 <!--end::Menu-->
                             </div>
                         </div>
                         <!--end::Header-->
                         <!--begin::Body-->
-                        <div class="card-body p-0">
-                            <!--begin::Chart-->
-                            <div class="mixed-widget-1-chart card-rounded-bottom bg-primary" data-kt-color="primary" style="height: 200px"></div>
-                            <!--end::Chart-->
-                            <!--begin::Stats-->
-                            <div class="card-p mt-n20 position-relative">
-                                <!--begin::Row-->
-                                <div class="row g-0">
-                                    <!--begin::Col-->
-                                    <div class="col d-flex flex-column bg-light-warning px-6 py-8 rounded-2 me-7 mb-7">
-                                        <i class="ki-duotone ki-chart-simple fs-2x text-warning my-2">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                            <span class="path3"></span>
-                                            <span class="path4"></span>
-                                        </i>
-                                        <a href="{{route('categories.index')}}" class="text-warning fw-semibold fs-6">الاقسام</a>
-                                    </div>
-                                    <!--end::Col-->
-                                    <!--begin::Col-->
-                                    <div class="col d-flex flex-column bg-light-primary px-6 py-8 rounded-2 mb-7">
-                                        <i class="ki-duotone ki-briefcase fs-2x text-primary my-2">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                        </i>
-                                        <a href="" class="text-primary fw-semibold fs-6">الالعاب</a>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <!--end::Row-->
-                                <!--begin::Row-->
-                                <div class="row g-0">
-                                    <!--begin::Col-->
-                                    <div class="col d-flex flex-column bg-light-danger px-6 py-8 rounded-2 me-7">
-                                        <i class="ki-duotone ki-abstract-26 fs-2x text-danger my-2">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                        </i>
-                                        <a href="{{route('teachers.index')}}" class="text-danger fw-semibold fs-6 mt-2">المعلمين</a>
-                                    </div>
-                                    <!--end::Col-->
-                                    <!--begin::Col-->
-                                    <div class="col d-flex flex-column bg-light-success px-6 py-8 rounded-2">
-                                        <i class="ki-duotone ki-sms fs-2x text-success my-2">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                        </i>
-                                        <a href="#" class="text-success fw-semibold fs-6 mt-2">المدراء</a>
-                                    </div>
-                                    <!--end::Col-->
-                                </div>
-                                <!--end::Row-->
+                        <div class="card-body py-3">
+                            <div class="d-flex flex-column">
+                                <a href="{{route('games.index')}}" class="btn btn-outline btn-outline-dashed btn-outline-info btn-active-light-info p-6 mb-5">
+                                    <i class="ki-duotone ki-game fs-2x text-info me-5"> <span class="path1"></span> <span class="path2"></span> </i>
+                                    <span class="fs-4 fw-bold">إدارة الألعاب</span>
+                                </a>
+
+                                <a href="{{ route('categories.index') }}" class="btn btn-outline btn-outline-dashed btn-outline-warning btn-active-light-warning p-6 mb-5">
+                                    <i class="ki-duotone ki-element-11 fs-2x text-warning me-5"> <span class="path1"></span> <span class="path2"></span> <span class="path3"></span> <span class="path4"></span> </i>
+                                    <span class="fs-4 fw-bold">إدارة الأقسام ({{ $categoryCount ?? 0 }})</span>
+                                </a>
+
+                                <a href="{{ route('words.index') }}" class="btn btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger p-6 mb-5">
+                                    <i class="ki-duotone ki-book-open fs-2x text-danger me-5"> <span class="path1"></span> <span class="path2"></span> </i>
+                                    <span class="fs-4 fw-bold">إدارة المفردات ({{ $vocabularyCount ?? 0 }})</span>
+                                </a>
+
+                                <a href="{{route('images.index')}}" class="btn btn-outline btn-outline-dashed btn-outline-success btn-active-light-success p-6 mb-5">
+                                    <i class="ki-duotone ki-file-up fs-2x text-success me-5"> <span class="path1"></span> <span class="path2"></span> <span class="path3"></span> </i>
+                                    <span class="fs-4 fw-bold">إدارة الصور</span>
+                                </a>
+{{--                                 <a href="#" class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary p-6"> <i class="ki-duotone ki-audio-square fs-2x text-primary me-5"> <span class="path1"></span> <span class="path2"></span> </i> <span class="fs-4 fw-bold">إدارة الصوتيات</span> </a>   If needed--}}
                             </div>
-                            <!--end::Stats-->
                         </div>
                         <!--end::Body-->
                     </div>
-                    <!--end::Mixed Widget 2-->
                 </div>
                 <!--end::Col-->
-                <div class="col-xl-6">
-                    <!--begin::Tables Widget 4-->
+
+                <!--begin::Col: Recent Activity -->
+                <div class="col-xl-7">
+                    <!--begin::Tables Widget 9-->
                     <div class="card card-xl-stretch mb-5 mb-xl-8">
                         <!--begin::Header-->
                         <div class="card-header border-0 pt-5">
                             <h3 class="card-title align-items-start flex-column">
-                                <span class="card-label fw-bold fs-3 mb-1">المعلمين</span>
-                                <span class="text-muted mt-1 fw-semibold fs-7">اكثر من   معلم  جديد </span>
+                                <span class="card-label fw-bold fs-3 mb-1">آخر المسجلين</span>
+                                <span class="text-muted mt-1 fw-semibold fs-7">آخر 5 طلاب ومعلمين</span>
                             </h3>
-                            <div class="card-toolbar">
-                                <ul class="nav">
-                                    <li class="nav-item">
-                                        <a class="nav-link btn btn-sm btn-color-muted btn-active btn-active-light-primary active fw-bold px-4 me-1" data-bs-toggle="tab" href="#kt_table_widget_4_tab_1">الشهر</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link btn btn-sm btn-color-muted btn-active btn-active-light-primary fw-bold px-4 me-1" data-bs-toggle="tab" href="#kt_table_widget_4_tab_2">الاسبوع</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link btn btn-sm btn-color-muted btn-active btn-active-light-primary fw-bold px-4" data-bs-toggle="tab" href="#kt_table_widget_4_tab_3">اليوم</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <!--end::Header-->
-                        <!--begin::Body-->
-{{--                        <div class="card-body py-3">--}}
-{{--                            <div class="tab-content">--}}
-{{--                                <!--begin::Tap pane-->--}}
-{{--                                <div class="tab-pane fade show active" id="kt_table_widget_4_tab_1">--}}
-{{--                                    <!--begin::Table container-->--}}
-{{--                                    <div class="table-responsive">--}}
-{{--                                        <!--begin::Table-->--}}
-{{--                                        <table class="table align-middle gs-0 gy-3">--}}
-{{--                                            <!--begin::Table head-->--}}
-{{--                                            <thead>--}}
-{{--                                            <tr>--}}
-{{--                                                <th class="p-0 w-50px"></th>--}}
-{{--                                                <th class="p-0 min-w-150px"></th>--}}
-{{--                                                <th class="p-0 min-w-140px"></th>--}}
-{{--                                                <th class="p-0 min-w-120px"></th>--}}
-{{--                                            </tr>--}}
-{{--                                            </thead>--}}
-{{--                                            <!--end::Table head-->--}}
-{{--                                            <!--begin::Table body-->--}}
-{{--                                            <tbody>--}}
-{{--                                            @foreach(getTeachersBerMonth() as $teacher)--}}
-{{--                                                <tr>--}}
-{{--                                                    <td>--}}
-{{--                                                        <div class="symbol symbol-50px">--}}
-{{--                                                            <img src="{{Storage::url($teacher->avatar)}}" alt="" />--}}
-{{--                                                        </div>--}}
-{{--                                                    </td>--}}
-{{--                                                    <td>--}}
-{{--                                                        <a href="#" class="text-dark fw-bold text-hover-primary mb-1 fs-6">{{$teacher->name}}</a>--}}
-{{--                                                        <span class="text-muted fw-semibold d-block fs-7">{{$teacher->email}}</span>--}}
-{{--                                                    </td>--}}
-{{--                                                    <td>--}}
-{{--                                                        <span class="badge badge-light-primary">{{$teacher->role->name}}</span>--}}
-{{--                                                    </td>--}}
-{{--                                                    <td class="text-end">--}}
-{{--                                                        <a href="{{route('authors.show',$teacher->id)}}" class="btn btn-icon btn-light-twitter btn-sm me-3">--}}
-{{--                                                            <i class="ki-duotone ki-user-edit fs-4">--}}
-{{--                                                                <span class="path1"></span>--}}
-{{--                                                                <span class="path2"></span>--}}
-{{--                                                            </i>--}}
-{{--                                                        </a>--}}
-{{--                                                        --}}{{--                                                <a href="#" class="btn btn-icon btn-light-facebook btn-sm">--}}
-{{--                                                        --}}{{--                                                    <i class="ki-duotone ki-trash fs-4">--}}
-{{--                                                        --}}{{--                                                        <span class="path1"></span>--}}
-{{--                                                        --}}{{--                                                        <span class="path2"></span>--}}
-{{--                                                        --}}{{--                                                    </i>--}}
-{{--                                                        --}}{{--                                                </a>--}}
-{{--                                                    </td>--}}
-{{--                                                </tr>--}}
-{{--                                            @endforeach--}}
-{{--                                            </tbody>--}}
-{{--                                            <!--end::Table body-->--}}
-{{--                                        </table>--}}
-{{--                                    </div>--}}
-{{--                                    <!--end::Table-->--}}
-{{--                                </div>--}}
-{{--                                <!--end::Tap pane-->--}}
-{{--                                <!--begin::Tap pane-->--}}
-{{--                                <div class="tab-pane fade" id="kt_table_widget_4_tab_2">--}}
-{{--                                    <!--begin::Table container-->--}}
-{{--                                    <div class="table-responsive">--}}
-{{--                                        <!--begin::Table-->--}}
-{{--                                        <table class="table align-middle gs-0 gy-3">--}}
-{{--                                            <!--begin::Table head-->--}}
-{{--                                            <thead>--}}
-{{--                                            <tr>--}}
-{{--                                                <th class="p-0 w-50px"></th>--}}
-{{--                                                <th class="p-0 min-w-150px"></th>--}}
-{{--                                                <th class="p-0 min-w-140px"></th>--}}
-{{--                                                <th class="p-0 min-w-120px"></th>--}}
-{{--                                            </tr>--}}
-{{--                                            </thead>--}}
-{{--                                            <!--end::Table head-->--}}
-{{--                                            <!--begin::Table body-->--}}
-{{--                                            <tbody>--}}
-{{--                                           @foreach(getTeachersBerWeak() as $teacher)--}}
-{{--                                               <tr>--}}
-{{--                                                   <td>--}}
-{{--                                                       <div class="symbol symbol-50px">--}}
-{{--                                                           <img src="{{Storage::url($teacher->avatar)}}" alt="" />--}}
-{{--                                                       </div>--}}
-{{--                                                   </td>--}}
-{{--                                                   <td>--}}
-{{--                                                       <a href="#" class="text-dark fw-bold text-hover-primary mb-1 fs-6">{{$teacher->name}}</a>--}}
-{{--                                                       <span class="text-muted fw-semibold d-block fs-7">{{$teacher->email}}</span>--}}
-{{--                                                   </td>--}}
-{{--                                                   <td>--}}
-{{--                                                       <span class="badge badge-light-primary">{{$teacher->role->name}}</span>--}}
-{{--                                                   </td>--}}
-{{--                                                   <td class="text-end">--}}
-{{--                                                       <a href="{{route('authors.show',$teacher->id)}}" class="btn btn-icon btn-light-twitter btn-sm me-3">--}}
-{{--                                                           <i class="ki-duotone ki-user-edit fs-4">--}}
-{{--                                                               <span class="path1"></span>--}}
-{{--                                                               <span class="path2"></span>--}}
-{{--                                                           </i>--}}
-{{--                                                       </a>--}}
-{{--                                                       --}}{{--                                                <a href="#" class="btn btn-icon btn-light-facebook btn-sm">--}}
-{{--                                                       --}}{{--                                                    <i class="ki-duotone ki-trash fs-4">--}}
-{{--                                                       --}}{{--                                                        <span class="path1"></span>--}}
-{{--                                                       --}}{{--                                                        <span class="path2"></span>--}}
-{{--                                                       --}}{{--                                                    </i>--}}
-{{--                                                       --}}{{--                                                </a>--}}
-{{--                                                   </td>--}}
-{{--                                               </tr>--}}
-{{--                                           @endforeach--}}
-{{--                                            </tbody>--}}
-{{--                                            <!--end::Table body-->--}}
-{{--                                        </table>--}}
-{{--                                    </div>--}}
-{{--                                    <!--end::Table-->--}}
-{{--                                </div>--}}
-{{--                                <!--end::Tap pane-->--}}
-{{--                                <!--begin::Tap pane-->--}}
-{{--                                <div class="tab-pane fade" id="kt_table_widget_4_tab_3">--}}
-{{--                                    <!--begin::Table container-->--}}
-{{--                                    <div class="table-responsive">--}}
-{{--                                        <!--begin::Table-->--}}
-{{--                                        <table class="table align-middle gs-0 gy-3">--}}
-{{--                                            <!--begin::Table head-->--}}
-{{--                                            <thead>--}}
-{{--                                            <tr>--}}
-{{--                                                <th class="p-0 w-50px"></th>--}}
-{{--                                                <th class="p-0 min-w-150px"></th>--}}
-{{--                                                <th class="p-0 min-w-140px"></th>--}}
-{{--                                                <th class="p-0 min-w-120px"></th>--}}
-{{--                                            </tr>--}}
-{{--                                            </thead>--}}
-{{--                                            <!--end::Table head-->--}}
-{{--                                            <!--begin::Table body-->--}}
-{{--                                            <tbody>--}}
-{{--                                            @foreach(getTeachersBerDay() as $teacher)--}}
-{{--                                                <tr>--}}
-{{--                                                    <td>--}}
-{{--                                                        <div class="symbol symbol-50px">--}}
-{{--                                                            <img src="{{Storage::url($teacher->avatar)}}" alt="" />--}}
-{{--                                                        </div>--}}
-{{--                                                    </td>--}}
-{{--                                                    <td>--}}
-{{--                                                        <a href="#" class="text-dark fw-bold text-hover-primary mb-1 fs-6">{{$teacher->name}}</a>--}}
-{{--                                                        <span class="text-muted fw-semibold d-block fs-7">{{$teacher->email}}</span>--}}
-{{--                                                    </td>--}}
-{{--                                                    <td>--}}
-{{--                                                        <span class="badge badge-light-primary">{{$teacher->role->name}}</span>--}}
-{{--                                                    </td>--}}
-{{--                                                    <td class="text-end">--}}
-{{--                                                        <a href="{{route('authors.show',$teacher->id)}}" class="btn btn-icon btn-light-twitter btn-sm me-3">--}}
-{{--                                                            <i class="ki-duotone ki-user-edit fs-4">--}}
-{{--                                                                <span class="path1"></span>--}}
-{{--                                                                <span class="path2"></span>--}}
-{{--                                                            </i>--}}
-{{--                                                        </a>--}}
-{{--                                                        --}}{{--                                                <a href="#" class="btn btn-icon btn-light-facebook btn-sm">--}}
-{{--                                                        --}}{{--                                                    <i class="ki-duotone ki-trash fs-4">--}}
-{{--                                                        --}}{{--                                                        <span class="path1"></span>--}}
-{{--                                                        --}}{{--                                                        <span class="path2"></span>--}}
-{{--                                                        --}}{{--                                                    </i>--}}
-{{--                                                        --}}{{--                                                </a>--}}
-{{--                                                    </td>--}}
-{{--                                                </tr>--}}
-{{--                                            @endforeach--}}
-{{--                                            </tbody>--}}
-{{--                                            <!--end::Table body-->--}}
-{{--                                        </table>--}}
-{{--                                    </div>--}}
-{{--                                    <!--end::Table-->--}}
-{{--                                </div>--}}
-{{--                                <!--end::Tap pane-->--}}
-{{--                            </div>--}}
-{{--                        </div>--}}
-                        <!--end::Body-->
-                    </div>
-                    <!--end::Tables Widget 4-->
-                </div>
-                <div class="col-xl-6">
-                    <!--begin::Tables Widget 5-->
-                    <div class="card card-xl-stretch mb-xl-8">
-                        <!--begin::Header-->
-                        <div class="card-header border-0 pt-5">
-                            <h3 class="card-title align-items-start flex-column">
-                                <span class="card-label fw-bold fs-3 mb-1">آخر الطلاب</span>
-                                <span class="text-muted mt-1 fw-semibold fs-7">اكثر من طالب جديد </span>
-                            </h3>
-                            <div class="card-toolbar">
-                                <ul class="nav">
-                                    <li class="nav-item">
-                                        <a class="nav-link btn btn-sm btn-color-muted btn-active btn-active-secondary fw-bold px-4 me-1 active" data-bs-toggle="tab" href="#kt_table_widget_5_tab_1">الشهر</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link btn btn-sm btn-color-muted btn-active btn-active-secondary fw-bold px-4 me-1" data-bs-toggle="tab" href="#kt_table_widget_5_tab_2">الاسبوع</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link btn btn-sm btn-color-muted btn-active btn-active-secondary fw-bold px-4" data-bs-toggle="tab" href="#kt_table_widget_5_tab_3">اليوم</a>
-                                    </li>
-                                </ul>
-                            </div>
                         </div>
                         <!--end::Header-->
                         <!--begin::Body-->
                         <div class="card-body py-3">
-                            <div class="tab-content">
-                                <!--begin::Tap pane-->
-                                <div class="tab-pane fade show active" id="kt_table_widget_5_tab_1">
-                                    <!--begin::Table container-->
-                                    <div class="table-responsive">
-                                        <!--begin::Table-->
-                                        <table class="table table-row-dashed table-row-gray-200 align-middle gs-0 gy-4">
-                                            <!--begin::Table head-->
-                                            <thead>
-                                            <tr class="border-0">
-                                                <th class="p-0 w-50px"></th>
-                                                <th class="p-0 min-w-150px"></th>
-                                                <th class="p-0 min-w-140px"></th>
-                                                <th class="p-0 min-w-110px"></th>
-                                                <th class="p-0 min-w-50px"></th>
-                                            </tr>
-                                            </thead>
-                                            <!--end::Table head-->
-                                            <!--begin::Table body-->
-                                            <tbody>
-
-                                            </tbody>
-                                            <!--end::Table body-->
-                                        </table>
-                                    </div>
-                                    <!--end::Table-->
-                                </div>
-                                <!--end::Tap pane-->
-                                <!--begin::Tap pane-->
-                                <div class="tab-pane fade" id="kt_table_widget_5_tab_2">
-                                    <!--begin::Table container-->
-                                    <div class="table-responsive">
-                                        <!--begin::Table-->
-                                        <table class="table table-row-dashed table-row-gray-200 align-middle gs-0 gy-4">
-                                            <!--begin::Table head-->
-                                            <thead>
-                                            <tr class="border-0">
-                                                <th class="p-0 w-50px"></th>
-                                                <th class="p-0 min-w-150px"></th>
-                                                <th class="p-0 min-w-140px"></th>
-                                                <th class="p-0 min-w-110px"></th>
-                                                <th class="p-0 min-w-50px"></th>
-                                            </tr>
-                                            </thead>
-                                            <!--end::Table head-->
-                                            <!--begin::Table body-->
-                                            <tbody>
-
-                                            </tbody>
-                                            <!--end::Table body-->
-                                        </table>
-                                    </div>
-                                    <!--end::Table-->
-                                </div>
-                                <!--end::Tap pane-->
-                                <!--begin::Tap pane-->
-                                <div class="tab-pane fade" id="kt_table_widget_5_tab_3">
-                                    <!--begin::Table container-->
-                                    <div class="table-responsive">
-                                        <!--begin::Table-->
-                                        <table class="table table-row-dashed table-row-gray-200 align-middle gs-0 gy-4">
-                                            <!--begin::Table head-->
-                                            <thead>
-                                            <tr class="border-0">
-                                                <th class="p-0 w-50px"></th>
-                                                <th class="p-0 min-w-150px"></th>
-                                                <th class="p-0 min-w-140px"></th>
-                                                <th class="p-0 min-w-110px"></th>
-                                                <th class="p-0 min-w-50px"></th>
-                                            </tr>
-                                            </thead>
-                                            <!--end::Table head-->
-                                            <!--begin::Table body-->
-                                            <tbody>
-
-                                            </tbody>
-                                            <!--end::Table body-->
-                                        </table>
-                                    </div>
-                                    <!--end::Table-->
-                                </div>
-                                <!--end::Tap pane-->
+                            <!--begin::Table container-->
+                            <div class="table-responsive">
+                                <!--begin::Table-->
+                                <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
+                                    <!--begin::Table head-->
+                                    <thead>
+                                    <tr class="fw-bold text-muted">
+                                        <th class="min-w-150px">المستخدم</th>
+                                        <th class="min-w-140px">الدور</th>
+                                        <th class="min-w-120px">تاريخ التسجيل</th>
+                                        <th class="min-w-100px text-end">الحالة</th>
+                                    </tr>
+                                    </thead>
+                                    <!--end::Table head-->
+                                    <!--begin::Table body-->
+                                    <tbody>
+                                    {{-- ***** YOU NEED TO PASS $recentUsers from the controller ***** --}}
+                                    {{-- $recentUsers should be a collection combining latest 5 students and teachers, sorted by creation date --}}
+                                    @forelse($recentUsers ?? [] as $user)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="symbol symbol-45px me-5">
+                                                        {{-- Assuming a generic avatar or based on role --}}
+                                                        @if(isset($user->avatar))
+                                                            <img src="{{ Storage::url($user->avatar) }}" alt=""/>
+                                                        @else
+                                                            <div class="symbol-label fs-2 fw-semibold {{ $user->role_name == 'Teacher' ? 'bg-light-info text-info' : 'bg-light-success text-success' }}"> {{-- Adjust logic based on how you identify roles --}}
+                                                                {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                    <div class="d-flex justify-content-start flex-column">
+                                                        <a href="#" class="text-dark fw-bold text-hover-primary fs-6">{{ $user->name ?? 'N/A' }}</a>
+                                                        <span class="text-muted fw-semibold text-muted d-block fs-7">{{ $user->email ?? 'N/A' }}</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @if($user->role->name == 'Teacher') {{-- Adjust condition --}}
+                                                <span class="badge badge-light-info">معلم</span>
+                                                @elseif($user->role->name == 'Student') {{-- Adjust condition --}}
+                                                <span class="badge badge-light-success">طالب</span>
+                                                @else
+                                                    <span class="badge badge-light-secondary">{{ $user->role->name ?? 'غير معروف' }}</span>
+                                                @endif
+                                            </td>
+                                            <td class="text-muted fw-semibold">
+                                                {{ $user->created_at ? $user->created_at->diffForHumans() : 'N/A' }}
+                                            </td>
+                                            <td class="text-end">
+                                                {{-- You can add status indicators here (e.g., Active, Pending) --}}
+                                                @if($user->status == 'active')
+                                                    <span class="badge badge-light-primary">نشط</span>
+                                                @elseif($user->status == 'pending')
+                                                    <span class="badge badge-light-warning">معلق</span>
+                                                @else
+                                                    <span class="badge badge-light-secondary">{{ $user->status ?? ''}}</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-5">لا يوجد مستخدمون جدد حالياً.</td>
+                                        </tr>
+                                    @endforelse
+                                    </tbody>
+                                    <!--end::Table body-->
+                                </table>
+                                <!--end::Table-->
                             </div>
+                            <!--end::Table container-->
                         </div>
-                        <!--end::Body-->
+                        <!--begin::Body-->
                     </div>
-                    <!--end::Tables Widget 5-->
+                    <!--end::Tables Widget 9-->
+                </div>
+                <!--end::Col-->
+            </div>
+            <!--end::Row: Content Management & Activity -->
+
+            <!-- OPTIONAL: Row for Charts or More Lists -->
+            {{--
+            <div class="row g-5 g-xl-8">
+                <div class="col-xl-6">
+                     -- Chart Widget --
+                </div>
+                 <div class="col-xl-6">
+                     -- Another List/Table Widget (e.g., Most popular games) --
                 </div>
             </div>
-            <!--end::Row-->
+            --}}
+
         </div>
         <!--end::Content container-->
     </div>
 @endsection
-@section('scripts')
 
+@section('scripts')
 @endsection
