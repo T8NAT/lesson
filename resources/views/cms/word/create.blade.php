@@ -145,13 +145,22 @@
                 <div class="text-danger fs-7 mt-2">{{ $message }}</div>
                 @enderror
             </div>
+
+            <div class="col-md-9 col-lg-4 fv-row mb-4"> {{-- Adjusted column sizes --}}
+                <label class="form-label">{{'الصوت (اختياري)'}}:</label>
+                <input type="file" name="items[__INDEX__][audio]" class="form-control" accept=".mp3,.wav,.ogg,.m4a"/> {{-- Added accept attribute --}}
+                {{-- *** Add Error display for audio *** --}}
+                @error('items.__INDEX__.audio')
+                <div class="text-danger fs-7 mt-2">{{ $message }}</div>
+                @enderror
+                {{-- *** End Error display *** --}}
+            </div>
             <div class="col-md-2 d-flex align-items-end">
                 <button type="button" class="btn btn-sm btn-light-danger remove-vocabulary-item">
                     <i class="ki-duotone ki-trash fs-5"></i>{{'حذف'}}
                 </button>
             </div>
 
-{{--             <div class="col-md-4"> <label>{{'الصوت (اختياري)'}}:</label> <input type="file" name="items[__INDEX__][audio_path]" class="form-control"></div>--}}
         </div>
     </div>
 @endsection
