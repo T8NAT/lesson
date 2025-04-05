@@ -1,5 +1,32 @@
 "use strict";
 var KTAppSaveWord = function () {
+    const formatInputNameForKey = (key) => {
+        if (!key.includes('.')) {
+            return key;
+        }
+
+        let parts = key.split('.');
+        let name = parts[0];
+        for (let i = 1; i < parts.length; i++) {
+            name += `[${parts[i]}]`;
+        }
+        return name;
+    };
+
+    const displayFieldError = (input, message) => {
+        const parent = input.closest('.fv-row') || input.parentNode;
+        if (!parent) return; // Exit if no suitable parent found
+        input.classList.add('is-invalid');
+        const existingError = parent.querySelector('.fv-plugins-message-container.invalid-feedback');
+        if (existingError) {
+            existingError.remove();
+        }
+        const errorDiv = document.createElement("div");
+        errorDiv.className = "fv-plugins-message-container invalid-feedback";
+        errorDiv.innerText = message;
+
+        parent.appendChild(errorDiv);
+    };
 
     const initWordForm = () => {
         const form = document.getElementById("kt_add_word_form");
@@ -8,14 +35,11 @@ var KTAppSaveWord = function () {
         submitButton.addEventListener("click", function (e) {
             e.preventDefault();
 
-            // Create FormData object
             const formData = new FormData(form);
 
-            // Disable the submit button and show loading indicator
             submitButton.setAttribute("data-kt-indicator", "on");
             submitButton.disabled = true;
 
-            // AJAX request to submit the form data
             $.ajax({
                 url: form.getAttribute("action"),
                 method: "POST",
@@ -33,34 +57,32 @@ var KTAppSaveWord = function () {
                         confirmButtonText: response.confirmButtonText
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            // Redirect to specified URL or reload the page
                             window.location.href = form.getAttribute("data-kt-redirect");
                         }
                     });
                 },
                 error: function (xhr) {
-                    // Re-enable the submit button
                     submitButton.removeAttribute("data-kt-indicator");
                     submitButton.disabled = false;
-
-                    // Check if validation errors exist
                     if (xhr.status === 422) {
                         const errors = xhr.responseJSON.errors;
 
-                        // Clear previous error messages
-                        form.querySelectorAll(".text-danger").forEach(el => el.remove());
-
-                        // Display validation errors under each input
                         for (const key in errors) {
-                            const input = form.querySelector(`[name="${key}"]`);
-                            if (input) {
-                                const errorDiv = document.createElement("div");
-                                errorDiv.className = "text-danger mt-1";
-                                errorDiv.innerText = errors[key][0];
-                                input.parentNode.appendChild(errorDiv);
+                            if (errors.hasOwnProperty(key) && errors[key].length > 0) {
+
+                                const inputName = formatInputNameForKey(key);
+
+                                const inputs = form.querySelectorAll(`[name="${inputName}"]`);
+
+                                if (inputs.length > 0) {
+                                    const input = inputs[0];
+                                    const message = errors[key][0];
+                                    displayFieldError(input, message);
+                                } else {
+                                    console.warn(`Validation error for key "${key}", but no input found with name "${inputName}". Check form structure and input names.`);
+                                }
                             }
                         }
-
                         Swal.fire({
                             title: "خطأ",
                             text: "يرجى تصحيح الأخطاء ثم المحاولة مرة أخرى.",
@@ -68,7 +90,6 @@ var KTAppSaveWord = function () {
                             confirmButtonText: "حسناً"
                         });
                     } else {
-                        // Handle any other errors
                         Swal.fire({
                             title: "خطأ",
                             text: "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
