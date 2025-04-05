@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ControllerHelper;
 use App\Models\Image;
 use App\Models\Word;
+use App\Services\UploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -45,7 +46,7 @@ class WordController extends Controller
      * Store a newly created resource in storage.
      */
 
-    public function store(Request $request)
+    public function store(Request $request,UploadService $uploadService)
     {
        $request->validate([
             'category_id' => 'required|exists:categories,id',
@@ -67,7 +68,7 @@ class WordController extends Controller
                 'items.*.word.max' => 'يجب ألا يتجاوز طول المفردة 191 حرفًا.',
                 'items.*.image_id.exists' => 'معرف الصورة المحدد غير صالح.',
                 'items.*.audio.file' => 'يجب أن يكون حقل الصوت ملفًا.',
-                'items.*.audio.mimes' => 'نوع ملف الصوت غير مدعوم (مسموح: mp3, wav, ogg, m4a).', 
+                'items.*.audio.mimes' => 'نوع ملف الصوت غير مدعوم (مسموح: mp3, wav, ogg, m4a).',
                 'items.*.audio.max' => 'يجب ألا يتجاوز حجم ملف الصوت 2 ميجابايت.',
             ]);
 
@@ -118,7 +119,7 @@ class WordController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error storing vocabulary items: ' . $e->getMessage());
-            Log::debug('Request data during error: ', $request->except(['items.*.audio'])); // Exclude file content
+            Log::debug('Request data during error: ', $request->except(['items.*.audio'])); 
 
             return ControllerHelper::generateResponse('error', 'فشلت عملية الإضافة. حدث خطأ غير متوقع.', 500);
         }
@@ -163,7 +164,7 @@ class WordController extends Controller
     public function update(Request $request, string $id)
     {
         $request->request->add(['id' => $id]);
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'category_id' => 'required|exists:categories,id',
             'items' => 'required|array|min:1',
             'items.*.word' => 'required|string|max:191',
@@ -179,10 +180,6 @@ class WordController extends Controller
                 'items.*.image_id.exists' => 'معرف الصورة المحدد غير صالح.',
             ]);
 
-
-        if ($validator->fails()) {
-            return ControllerHelper::generateResponse('error', 'خطأ في البيانات المدخلة', 422);
-        }
 
         $categoryId = $request->input('category_id');
         $items = $request->input('items');
