@@ -102,12 +102,13 @@ class GameController extends Controller
 
                 if (Auth::guard('student')->check()) {
                     $studentId = Auth::guard('student')->id();
-                    $student[] = [
-                        'student_id' => $studentId,
-                        'randomWord' => $randomWord,
-                        ];
-                    Cache::put('student', $student, now()->addHours(2));
+                    $gameState = [
+                        'game_type' => $gameType,
+                        'random_word' => $randomWord
+                    ];
+                    Cache::put('student_game_state_'.$studentId, $gameState, now()->addMinutes(30));
                 }
+//                dd(Cache::get('student_game_state_'.$studentId));
                 return ControllerHelper::generateResponseApi(true, 'تم تشغيل لعبة البحث عن الاسماء بنجاح', $data, 200);
                 break;
 
@@ -164,11 +165,11 @@ class GameController extends Controller
 
                 if (Auth::guard('student')->check()) {
                     $studentId = Auth::guard('student')->id();
-                    $student[] = [
-                        'student_id' => $studentId,
-                        'correct_word' => $correctWord,
+                    $gameState = [
+                        'game_type' => $gameType,
+                        'correct_answer' => $correctWord
                     ];
-                    Cache::put('student', $student, now()->addHours(2));
+                    Cache::put('student_game_state_' . $studentId, $gameState, now()->addMinutes(30));
                 }
 
                 return ControllerHelper::generateResponseApi(true, 'تم تشغيل لعبة صورة وكلمات بنجاح', $data, 200);
@@ -177,9 +178,52 @@ class GameController extends Controller
             case 'صوت':
                 $category = $game->categories()->where('categories.id', $category_id)->first();
                 if (!$category) {
-                    return ControllerHelper::generateResponseApi(false, 'القسم غير مرتبط بهذه اللعبة.', null, 404);
+                    return ControllerHelper::generateResponseApi(false, 'القسم المحدد غير مرتبط بهذه اللعبة.', null, 404);
                 }
+
+                $itemsWithAudio = Word::where('category_id', $category_id)
+                    ->whereNotNull('audio')
+                    ->where('audio', '!=', '')
+                    ->get();
+
+                if ($itemsWithAudio->isEmpty()) {
+                    return ControllerHelper::generateResponseApi(false, 'لا توجد مفردات مرتبطة بملف صوتي في هذا القسم لبدء اللعبة.', null, 404);
+                }
+
+                $correctItem = $itemsWithAudio->random();
+                $correctWord = $correctItem->word;
+                $correctAudioPath = $correctItem->audio;
+
+                if (empty($correctAudioPath)) {
+
+                    Log::error("Audio path is empty for VocabularyItem ID: " . $correctItem->id . " despite filtering.");
+                    return ControllerHelper::generateResponseApi(false, 'حدث خطأ: لم يتم العثور على ملف الصوت المرتبط بالكلمة المختارة.', null, 500);
+                }
+
+
+                if (Auth::guard('student')->check()) {
+                    $studentId = Auth::guard('student')->id();
+                    $gameState = [
+                        'game_type' => $gameType,
+                        'correct_answer' => $correctWord
+                    ];
+                    Cache::put('student_game_state_' . $studentId, $gameState, now()->addMinutes(30));
+                    Log::info("Sound Game: Cached correct word '{$correctWord}' for student ID {$studentId}");
+                } else {
+                    Log::warning("Sound Game: Unauthenticated user attempted to start.");
+                     return ControllerHelper::generateResponseApi(false, 'المستخدم غير مسجل للدخول.', null, 401);
+                }
+
+//                dd(Cache::get('correct_sound_word_' , $student));
+                $data = [
+                    'game' => $game->name,
+                    'audio_url' => url(Storage::url($correctAudioPath)),
+                    'correct_word' => $correctWord,
+                ];
+
+                return ControllerHelper::generateResponseApi(true, 'تم تشغيل لعبة المحادثات بنجاح', $data, 200);
                 break;
+
                 default:
                     return ControllerHelper::generateResponseApi(false, 'نوع اللعبة غير مدعوم', null, 400);
         }
@@ -188,30 +232,48 @@ class GameController extends Controller
 
     public function checkAnswer(Request $request)
     {
+
+        $validator = Validator::make($request->all(), [
+            'answer' => 'required|string|max:191',
+        ]);
+
+        if ($validator->fails()) {
+            return ControllerHelper::generateResponseApi(false, 'الإجابة مطلوبة.', $validator->errors(), 422);
+        }
+
+        if (!Auth::guard('student')->check()) {
+            return ControllerHelper::generateResponseApi(false, 'المستخدم غير مسجل للدخول.', null, 401);
+        }
         $studentId = Auth::guard('student')->id();
 
-        $student = collect(Cache::get('student', []))
-            ->firstWhere('student_id', $studentId);
+        $gameState = Cache::get('student_game_state_' . $studentId);
 
-        if ($student && isset($student['correct_word'])) {
-            $correctWord = $student['correct_word'];
-        }else{
-            return ControllerHelper::generateResponseApi(false, 'لم يتم العثور على الكلمة الخاصة بالطالب في الجلسة.', null, 400);
-
+        if (!$gameState) {
+            return ControllerHelper::generateResponseApi(false, 'لم يتم العثور على لعبة نشطة أو انتهت مدة الجلسة.', null, 404);
         }
 
-        if ($request->word == $correctWord) {
-            return ControllerHelper::generateResponseApi(true, 'الاجابة صحيحة', null);
+//        $gameType = $gameState['game_type'];
+        $correctAnswer = $gameState['correct_answer'];
+        $studentAnswer = $request->input('answer');
 
-        }else{
-            $correctWord =[
-                'الاجابة الصحيحة' => $correctWord,
-            ];
-            return ControllerHelper::generateResponseApi(false, 'الاجابة خاطئة', $correctWord, 422);
 
+        $isCorrect = (strtolower(trim($studentAnswer)) === strtolower(trim($correctAnswer)));
+
+        Cache::forget('student_game_state_' . $studentId);
+
+        if ($isCorrect) {
+            /* --- إضافة نقاط للطالب  ---
+             $student = Auth::guard('student')->user();
+            $student->addPoints(POINTS_FOR_CORRECT_ANSWER);
+            return ControllerHelper::generateResponseApi(true, 'إجابة صحيحة! أحسنت.', ['points_awarded' => 10 ], 200);
+            */
+
+            return ControllerHelper::generateResponseApi(true, 'إجابة صحيحة! أحسنت.',null ,200);
+        } else {
+            return ControllerHelper::generateResponseApi(false, 'إجابة خاطئة. حاول مرة أخرى!', ['correct_answer' => $correctAnswer], 422);
         }
-
     }
+
 
     public function checkImage(Request $request)
     {
@@ -219,42 +281,90 @@ class GameController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $imageFile = $request->file('image');
-
-        $imagePath = Storage::disk('public')->put('temp_images', $imageFile);
-        $fullImagePath = storage_path('app/public/' . $imagePath);
-
+        if (!Auth::guard('student')->check()) {
+            return ControllerHelper::generateResponseApi(false, 'المستخدم غير مسجل للدخول.', null, 401);
+        }
         $studentId = Auth::guard('student')->id();
 
-        $student = collect(Cache::get('student', []))
-            ->firstWhere('student_id', $studentId);
-//        dd($student);
+        $gameState = Cache::get('student_game_state_' . $studentId);
 
-        if ($student && isset($student['randomWord'])) {
-            $randomWord = $student['randomWord'];
-        } else {
-            Storage::disk('public')->delete($imagePath);
-            return ControllerHelper::generateResponseApi(false, 'لم يتم العثور على الكلمة الخاصة بالطالب في الجلسة.', null, 400);
+        if ($gameState['game_type'] !== 'كلمات') {
+            return ControllerHelper::generateResponseApi(false, 'لم يتم العثور على لعبة نشطة أو انتهت مدة الجلسة.', null, 404);
         }
+//        if ($gameState['game_type'] !== 'كلمات') {
+//            Log::warning("Student ID {$studentId} called checkImage for '{$gameState['game_type']}' game.");
+//            return ControllerHelper::generateResponseApi(false, 'هذه الإجابة يجب أن تكون نصية وليست صورة.', null, 400);
+//        }
 
+        $correctWord = $gameState['random_word'];
+//dd($correctWord);
+        $imageFile = $request->file('image');
+        $imagePath = Storage::disk('public')->put('temp_images', $imageFile);
+        $fullImagePath = storage_path('app/public/' . $imagePath);
         $labels = $this->analyzeImage($fullImagePath);
-
         Storage::disk('public')->delete($imagePath);
 
         $isMatch = false;
-        foreach ($labels as $label) {
-            if (strtolower($label['description']) == strtolower($randomWord)) {
-                $isMatch = true;
-                break;
+        if (!empty($labels)) {
+            foreach ($labels as $label) {
+                if (isset($label['description']) && strtolower($label['description']) == strtolower($correctWord)) {
+                    $isMatch = true;
+                    break;
+                }
             }
         }
+
+        Cache::forget('student_game_state_' . $studentId);
 
         if ($isMatch) {
             return ControllerHelper::generateResponseApi(true, 'أحسنت! الصورة تطابق الكلمة.', ['match' => true], 200);
         } else {
-            return ControllerHelper::generateResponseApi(false, 'للأسف! الصورة لا تطابق الكلمة.', ['match' => false, 'labels' => $labels], 400);
+            return ControllerHelper::generateResponseApi(false, 'للأسف! الصورة لا تطابق الكلمة.', ['match' => false,  'labels' => $labels ], 400);
         }
     }
+//    public function checkImage(Request $request)
+//    {
+//        $request->validate([
+//            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+//        ]);
+//
+//        $imageFile = $request->file('image');
+//
+//        $imagePath = Storage::disk('public')->put('temp_images', $imageFile);
+//        $fullImagePath = storage_path('app/public/' . $imagePath);
+//
+//        $studentId = Auth::guard('student')->id();
+//
+//        $gameState = Cache::get('student_game_state_' . $studentId);
+//
+////        dd($gameState);
+//
+//        if ($gameState && isset($gameState['random_word'])) {
+//            $randomWord = $gameState['random_word'];
+//        } else {
+//            Storage::disk('public')->delete($imagePath);
+//            return ControllerHelper::generateResponseApi(false, 'لم يتم العثور على الكلمة الخاصة بالطالب في الجلسة.', null, 400);
+//        }
+//
+//        $labels = $this->analyzeImage($fullImagePath);
+//
+//        Storage::disk('public')->delete($imagePath);
+//
+//        $isMatch = false;
+//        foreach ($labels as $label) {
+//            if (strtolower($label['description']) == strtolower($randomWord)) {
+//                $isMatch = true;
+//                break;
+//            }
+//        }
+//
+//        if ($isMatch) {
+//            Cache::forget('student');
+//            return ControllerHelper::generateResponseApi(true, 'أحسنت! الصورة تطابق الكلمة.', ['match' => true], 200);
+//        } else {
+//            return ControllerHelper::generateResponseApi(false, 'للأسف! الصورة لا تطابق الكلمة.', ['match' => false, 'labels' => $labels], 400);
+//        }
+//    }
     private function analyzeImage(string $imagePath): array
     {
         Log::info("Starting analyzeImage for: " . $imagePath);
