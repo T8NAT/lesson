@@ -288,7 +288,7 @@ class GameController extends Controller
 
         $gameState = Cache::get('student_game_state_' . $studentId);
 
-        if ($gameState['game_type'] !== 'كلمات') {
+        if (!$gameState || $gameState['game_type'] !== 'كلمات') {
             return ControllerHelper::generateResponseApi(false, 'لم يتم العثور على لعبة نشطة أو انتهت مدة الجلسة.', null, 404);
         }
 //        if ($gameState['game_type'] !== 'كلمات') {
@@ -301,6 +301,7 @@ class GameController extends Controller
         $imageFile = $request->file('image');
         $imagePath = Storage::disk('public')->put('temp_images', $imageFile);
         $fullImagePath = storage_path('app/public/' . $imagePath);
+
         $labels = $this->analyzeImage($fullImagePath);
         Storage::disk('public')->delete($imagePath);
 
@@ -322,49 +323,6 @@ class GameController extends Controller
             return ControllerHelper::generateResponseApi(false, 'للأسف! الصورة لا تطابق الكلمة.', ['match' => false,  'labels' => $labels ], 400);
         }
     }
-//    public function checkImage(Request $request)
-//    {
-//        $request->validate([
-//            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-//        ]);
-//
-//        $imageFile = $request->file('image');
-//
-//        $imagePath = Storage::disk('public')->put('temp_images', $imageFile);
-//        $fullImagePath = storage_path('app/public/' . $imagePath);
-//
-//        $studentId = Auth::guard('student')->id();
-//
-//        $gameState = Cache::get('student_game_state_' . $studentId);
-//
-////        dd($gameState);
-//
-//        if ($gameState && isset($gameState['random_word'])) {
-//            $randomWord = $gameState['random_word'];
-//        } else {
-//            Storage::disk('public')->delete($imagePath);
-//            return ControllerHelper::generateResponseApi(false, 'لم يتم العثور على الكلمة الخاصة بالطالب في الجلسة.', null, 400);
-//        }
-//
-//        $labels = $this->analyzeImage($fullImagePath);
-//
-//        Storage::disk('public')->delete($imagePath);
-//
-//        $isMatch = false;
-//        foreach ($labels as $label) {
-//            if (strtolower($label['description']) == strtolower($randomWord)) {
-//                $isMatch = true;
-//                break;
-//            }
-//        }
-//
-//        if ($isMatch) {
-//            Cache::forget('student');
-//            return ControllerHelper::generateResponseApi(true, 'أحسنت! الصورة تطابق الكلمة.', ['match' => true], 200);
-//        } else {
-//            return ControllerHelper::generateResponseApi(false, 'للأسف! الصورة لا تطابق الكلمة.', ['match' => false, 'labels' => $labels], 400);
-//        }
-//    }
     private function analyzeImage(string $imagePath): array
     {
         Log::info("Starting analyzeImage for: " . $imagePath);
