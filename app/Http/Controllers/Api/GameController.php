@@ -35,33 +35,6 @@ class GameController extends Controller
 
     public function checkGame(Request $request)
     {
-
-//        $game = null;
-//
-//        if ($request->has('category_id')) {
-//            $category = Category::with('games',function ($q) use ($categoryId){
-//                $q->where('category_id',$categoryId);
-//            })->find($request->game_id);
-//
-//        } elseif ($request->has('type')) {
-//            $game = Game::whereHas('type', function ($query) use ($request) {
-//                $query->where('name', $request->type);
-//            })->first();
-//
-//        }
-//        if ($category == 1){
-//            if ($request->type == 'كلمات') {
-//                if ($game->category->words->isEmpty()) {
-//                return response()->json(['message' => 'لا توجد كلمات متاحة لهذه اللعبة.'], 404);
-//                }
-//
-//                $allWords = collect($game->category->words)->pluck('words')->flatten();
-//                $randomWord = $allWords->random();
-//
-//                return ControllerHelper::generateResponseApi(true,'ابحث من حولك عن',['game'=>$game->name,'word'=>$randomWord,'category'=>$game->category->name],200);
-//            }
-//        }
-
         $validator = Validator::make($request->all(), [
             'game_id' => 'required|exists:games,id',
             'category_id' => 'required|exists:categories,id',
