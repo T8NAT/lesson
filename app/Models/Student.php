@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Passport\HasApiTokens;
 
@@ -24,7 +25,8 @@ class Student extends Authenticatable
         'last_login',
         'terms_and_conditions',
         'type',
-        'role_id'
+        'role_id',
+        'points'
     ];
 
     public function role() : BelongsTo
@@ -35,5 +37,14 @@ class Student extends Authenticatable
     public function teacher() : BelongsTo
     {
         return $this->belongsTo(Teacher::class);
+    }
+    public function CompletedLevels() : BelongsToMany{
+        return $this->belongsToMany(Level::class,'student_level')->withPivot('completed_at');
+    }
+    public function addPoints($points):void
+    {
+        if ($points > 0){
+            $this->increment('points', $points);
+        }
     }
 }
