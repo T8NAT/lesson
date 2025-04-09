@@ -27,8 +27,10 @@ class StudentAuthController extends Controller
             $student = Student::query()->where('email', $request->get('email'))->first();
             if (Hash::check($request->get('password'),$student->password)) {
                 if ($this->checkActiveTokens($student->id)){
-                    return ControllerHelper::generateResponseApi(false, 'تم رفض تسجيل الدخول، يوجد دخول نشط!');
+                    $this->revokePreviousToken($student->id);
+                    return ControllerHelper::generateResponseApi(false, 'يوجد دخول نشط!، تم تسجيل الخروج من كافة الجلسات،قم بتسجيل الدخول مرة اخرى');
                 }else{
+                    $student->update(['last_login'=>date('Y-m-d H:i:s')]);
                     return ControllerHelper::generateToken($student,'تم تسجيل الدخول بنجاح');
                 }
 
