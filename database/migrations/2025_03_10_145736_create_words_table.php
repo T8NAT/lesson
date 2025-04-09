@@ -18,7 +18,8 @@ return new class extends Migration
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
             $table->foreignId('image_id')->nullable();
             $table->foreign('image_id')->references('id')->on('images')->onDelete('cascade');
-            $table->string('audio')->nullable();
+            $table->foreignId('audio_id')->nullable();
+            $table->foreign('audio_id')->references('id')->on('audios')->onDelete('cascade');
 
             $table->timestamps();
         });
