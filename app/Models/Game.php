@@ -38,4 +38,8 @@ class Game extends Model
     {
         return $this->hasMany(Image::class);
     }
+    public function levels(): hasMany
+    {
+        return $this->hasMany(Level::class)->orderBy('level_number');
+    }
 }
