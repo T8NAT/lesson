@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AudioController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\StudentController;
@@ -35,6 +36,7 @@ Route::prefix('dashboard')->middleware(['auth:user,admin'])->group(function () {
         'types'            =>   TypeController::class,
         'images'           =>   ImageController::class,
         'students'         =>   StudentController::class,
+        'audios'           =>   AudioController::class,
     ]);
 
     Route::get('get-categories',[CategoryController::class,'getCategories'])->name('getCategories');
