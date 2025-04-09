@@ -12,7 +12,7 @@ class Word extends Model
         'word',
         'category_id',
         'image_id',
-        'audio',
+        'audio_id',
     ];
 
 //    protected $casts = [
@@ -25,5 +25,9 @@ class Word extends Model
     }
     public function image(): BelongsTo{
         return $this->belongsTo(Image::class);
+    }
+    public function audio(): BelongsTo
+    {
+        return $this->belongsTo(Audio::class);
     }
 }
