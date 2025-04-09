@@ -52,7 +52,7 @@ class ImageController extends Controller
         ]);
 
         $data = $request->only(['name','image']);
-        $image = $uploadService->uploadImage($request,'image','images/');
+        $image = $uploadService->uploadImage($request,'image','images/games/images');
         $data['image'] = $image;
         $is_Saved = Image::query()->create($data);
         if($is_Saved){
@@ -110,6 +110,19 @@ class ImageController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $image = Image::query()->findOrFail($id);
+        if ($image->image){
+            $imagePath = public_path('storage/'.$image->image);
+            if (file_exists($imagePath)){
+                unlink($imagePath);
+            }
+        }
+        $is_Deleted = $image->delete();
+
+        if ($is_Deleted){
+            return ControllerHelper::generateResponse('success','تم حذف الصورة بنجاح');
+        }else{
+            return ControllerHelper::generateResponse('error','لم يتم حذف الصورة، حاول مرة اخرى',500);
+        }
     }
 }
