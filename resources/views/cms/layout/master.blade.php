@@ -1080,6 +1080,16 @@
                                                 </div>
                                             @endif
                                         <!--end:Menu item-->
+                                                <div class="menu-item">
+                                                    <!--begin:Menu link-->
+                                                    <a class="menu-link" href="{{route('types.index')}}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+                                                        <span class="menu-title">{{'الانواع'}}</span>
+                                                    </a>
+                                                    <!--end:Menu link-->
+                                                </div>
 {{--                                        @if (userHasPermission('game', 'can-show'))--}}
                                         <!--begin:Menu item-->
                                         <div class="menu-item">
@@ -1120,14 +1130,16 @@
                                             <!--end:Menu item-->
                                                 <div class="menu-item">
                                                     <!--begin:Menu link-->
-                                                    <a class="menu-link" href="{{route('types.index')}}">
+                                                    <a class="menu-link" href="{{route('audios.index')}}">
 														<span class="menu-bullet">
 															<span class="bullet bullet-dot"></span>
 														</span>
-                                                        <span class="menu-title">{{'الانواع'}}</span>
+                                                        <span class="menu-title">{{'قائمة الاصوات'}}</span>
                                                     </a>
                                                     <!--end:Menu link-->
                                                 </div>
+                                                <!--end:Menu item-->
+
                                     </div>
                                     <!--end:Menu sub-->
                                 </div>
