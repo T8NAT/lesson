@@ -53,12 +53,7 @@ class WordController extends Controller
             'items' => 'required|array|min:1',
             'items.*.word' => 'required|string|max:191',
             'items.*.image_id' => 'nullable|integer|exists:images,id',
-            'items.*.audio' => [
-                'nullable',
-                'file',
-                'mimes:mp3,wav,ogg,m4a',
-                'max:2024',
-            ],
+            'items.*.audio_id' => ['nullable', 'integer','exists:audios,id'],
         ],
             [
                 'category_id.required' => 'حقل القسم مطلوب.',
@@ -67,9 +62,7 @@ class WordController extends Controller
                 'items.*.word.required' => 'حقل المفردة (الكلمة) مطلوب لكل عنصر.',
                 'items.*.word.max' => 'يجب ألا يتجاوز طول المفردة 191 حرفًا.',
                 'items.*.image_id.exists' => 'معرف الصورة المحدد غير صالح.',
-                'items.*.audio.file' => 'يجب أن يكون حقل الصوت ملفًا.',
-                'items.*.audio.mimes' => 'نوع ملف الصوت غير مدعوم (مسموح: mp3, wav, ogg, m4a).',
-                'items.*.audio.max' => 'يجب ألا يتجاوز حجم ملف الصوت 2 ميجابايت.',
+                'items.*.audio_id.exists' => 'معرف الصوت المحدد غير صالح.',
             ]);
 
         $categoryId = $request->input('category_id');
@@ -81,7 +74,7 @@ class WordController extends Controller
                 if (empty(trim($itemData['word']))) {
                     continue;
                 }
-                $audioPath = null;
+              /*  $audioPath = null;
 
                 $audioInputName = "items.{$index}.audio";
 
@@ -100,13 +93,13 @@ class WordController extends Controller
                 } elseif ($request->hasFile($audioInputName) && !$request->file($audioInputName)->isValid()) {
                     Log::error("Invalid audio file uploaded for item at index {$index}. Error code: " . $request->file($audioInputName)->getError());
 
-                }
+                }*/
 
                 Word::create([
                     'category_id' => $categoryId,
                     'word' => trim($itemData['word']),
                     'image_id' => $itemData['image_id'] ?? null,
-                    'audio' => $audioPath,
+                    'audio_id' =>  $itemData['audio_id'] ?? null,
                 ]);
             }
 
