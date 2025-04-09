@@ -92,12 +92,59 @@
                             </div>
                         </div>
                         <div class="card-body pt-0">
-                            <div id="vocabulary-item-container">
+                            <div class="form-group row border-top pt-5 mb-3 " data-index="__INDEX__">
+                                <div class="col-md-5 fv-row">
+                                    <label class="form-label required">{{'المفردة (الكلمة)'}}:</label>
+                                    <input type="text" name="items[__INDEX__][word]" class="form-control mb-2" placeholder="{{'أدخل الكلمة'}}" required/>
+                                    @error('items.__INDEX__.word')
+                                    <div class="text-danger fs-7 mt-2">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-5 fv-row">
+                                    <label class="form-label">{{'الصورة المرتبطة (اختياري)'}}:</label>
+                                    <select name="items[__INDEX__][image_id]" class="form-select item-image-select" data-control="select2" data-placeholder="اختر صورة..." data-allow-clear="true">
+                                        <option></option>
+                                        @if(isset($images))
+                                            @foreach($images as $key => $image)
+                                                <option value="{{ $image->id }}">{{ $key+1 }} - {{ Str::limit(basename($image->name), 20) }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                    @error('items.__INDEX__.image_id')
+                                    <div class="text-danger fs-7 mt-2">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="col-md-5 fv-row">
+                                    <label class="form-label">{{'الاصوات المرتبطة (اختياري)'}}:</label>
+                                    <select class="form-select mb-2" name="items[__INDEX__][audio_id]" data-control="select2" data-hide-search="true" data-placeholder="اختر صوت..."  data-allow-clear="true">
+                                        <option></option>
+                                        @if(isset($audios))
+                                            @foreach($audios as $key => $audio)
+                                                <option value="{{ $audio->id }}">{{ $key+1 }} - {{ Str::limit(basename($audio->name), 20) }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                    @error('items.__INDEX__.audio_id')
+                                    <div class="text-danger fs-7 mt-2">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="button" class="btn btn-sm btn-light-danger remove-vocabulary-item">
+                                        <i class="ki-duotone ki-trash fs-5"></i>{{'حذف'}}
+                                    </button>
+                                </div>
+
                             </div>
-                            <button type="button" class="btn btn-light-primary mt-5" id="add-vocabulary-item">
+                        </div>
+                        <div class="card-body pt-0">
+                            <div>
+                            </div>
+                            <button type="button" class="btn btn-light-primary mt-5">
                                 <i class="ki-duotone ki-plus fs-3"></i>{{'إضافة مفردة جديدة'}}
                             </button>
-                            @error('items') {{-- General error for the items array --}}
+                            @error('items')
                             <div class="text-danger fs-7 mt-2">{{ $message }}</div>
                             @enderror
                         </div>
@@ -121,97 +168,17 @@
     </div>
     <!--end::Content-->
 
-    <!-- Template for dynamic rows (Hidden) -->
-    <div id="vocabulary-item-template" style="display: none;">
-        <div class="form-group row border-top pt-5 mb-3 vocabulary-item-row" data-index="__INDEX__">
-            <div class="col-md-5 fv-row">
-                <label class="form-label required">{{'المفردة (الكلمة)'}}:</label>
-                <input type="text" name="items[__INDEX__][word]" class="form-control mb-2" placeholder="{{'أدخل الكلمة'}}" required/>
-                @error('items.__INDEX__.word')
-                <div class="text-danger fs-7 mt-2">{{ $message }}</div>
-                @enderror
-            </div>
-            <div class="col-md-5 fv-row">
-                <label class="form-label">{{'الصورة المرتبطة (اختياري)'}}:</label>
-                <select name="items[__INDEX__][image_id]" class="form-select item-image-select" data-control="select2" data-placeholder="اختر صورة..." data-allow-clear="true">
-                    <option></option>
-                    @if(isset($images))
-                        @foreach($images as $key => $image)
-                            <option value="{{ $image->id }}">{{ $key+1 }} - {{ Str::limit(basename($image->name), 20) }}</option>
-                        @endforeach
-                    @endif
-                </select>
-                @error('items.__INDEX__.image_id')
-                <div class="text-danger fs-7 mt-2">{{ $message }}</div>
-                @enderror
-            </div>
 
-            <div class="col-md-9 col-lg-4 fv-row mb-4"> {{-- Adjusted column sizes --}}
-                <label class="form-label">{{'الصوت (اختياري)'}}:</label>
-                <input type="file" name="items[__INDEX__][audio]" class="form-control" accept=".mp3,.wav,.ogg,.m4a"/> {{-- Added accept attribute --}}
-                {{-- *** Add Error display for audio *** --}}
-                @error('items.__INDEX__.audio')
-                <div class="text-danger fs-7 mt-2">{{ $message }}</div>
-                @enderror
-                {{-- *** End Error display *** --}}
-            </div>
-            <div class="col-md-2 d-flex align-items-end">
-                <button type="button" class="btn btn-sm btn-light-danger remove-vocabulary-item">
-                    <i class="ki-duotone ki-trash fs-5"></i>{{'حذف'}}
-                </button>
-            </div>
-
-        </div>
-    </div>
 @endsection
 
 @section('scripts')
      <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/i18n/ar.min.js"></script>
-
      <script src="{{asset('assets/plugins/custom/formrepeater/formrepeater.bundle.js')}}"></script>
-
      <script src="{{asset('assets/js/cms/words/save-word.js')}}"></script>
+
      <script>
          const categories = {
              get: "{{ route('getCategories') }}",
          };
      </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const container = document.getElementById('vocabulary-item-container');
-            const addButton = document.getElementById('add-vocabulary-item');
-            const template = document.getElementById('vocabulary-item-template').innerHTML;
-            let itemIndex = 0; // Counter for unique field names
-
-            function addNewItem() {
-                const newItemHtml = template.replace(/__INDEX__/g, itemIndex);
-                const newItemElement = document.createElement('div');
-                newItemElement.innerHTML = newItemHtml;
-                container.appendChild(newItemElement.firstElementChild);
-
-                const newSelect = container.querySelector(`[name="items[${itemIndex}][image_id]"]`);
-                if (newSelect && $().select2) {
-                    $(newSelect).select2({
-                        dir: "rtl",
-                        language: "ar"
-                    });
-                } else {
-                    console.warn('Select2 not found or new select element missing for index:', itemIndex);
-                }
-
-                itemIndex++;
-            }
-            addNewItem();
-
-            addButton.addEventListener('click', addNewItem);
-
-            container.addEventListener('click', function (event) {
-                if (event.target.closest('.remove-vocabulary-item')) {
-                    event.target.closest('.vocabulary-item-row').remove();
-                }
-            });
-
-        });
-    </script>
-
 @endsection
