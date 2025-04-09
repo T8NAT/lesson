@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\StudentAuthController;
 use App\Http\Controllers\Api\Auth\TeacherAuthController;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\GameController;
 use App\Http\Controllers\Api\HomeController;
