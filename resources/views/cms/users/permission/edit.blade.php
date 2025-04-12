@@ -149,59 +149,6 @@
                                             <!--begin::Table row-->
                                             <tr>
                                                 <!--begin::Label-->
-                                                <td class="text-gray-800">التصنيفات</td>
-                                                <!--end::Label-->
-                                                <!--begin::Input group-->
-                                                <td>
-                                                    <!--begin::Wrapper-->
-                                                    <div class="d-flex">
-                                                        <!--begin::Checkbox-->
-                                                        <label
-                                                            class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                   @if(isset($permission['permissions']['category']['can-add'])) checked
-                                                                   @endif  value="1"
-                                                                   name="permissions[category][can-add]"/>
-                                                            <span class="form-check-label">اضافة</span>
-                                                        </label>
-                                                        <!--end::Checkbox-->
-                                                        <!--begin::Checkbox-->
-                                                        <label
-                                                            class="form-check form-check-custom form-check-solid me-5 me-lg-20">
-                                                            <input class="form-check-input" type="checkbox" value="1"
-                                                                   @if(isset($permission['permissions']['category']['can-edit'])) checked
-                                                                   @endif name="permissions[category][can-edit]"/>
-                                                            <span class="form-check-label">تعديل</span>
-                                                        </label>
-                                                        <!--end::Checkbox-->
-                                                        <!--begin::Checkbox-->
-                                                        <label
-                                                            class="form-check form-check-custom form-check-solid me-5 me-lg-20">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                   @if(isset($permission['permissions']['category']['can-show'])) checked
-                                                                   @endif value="1"
-                                                                   name="permissions[category][can-show]"/>
-                                                            <span class="form-check-label">عرض</span>
-                                                        </label>
-                                                        <!--end::Checkbox-->
-                                                        <!--begin::Checkbox-->
-                                                        <label
-                                                            class="form-check form-check-custom form-check-solid me-5 me-lg-20">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                   @if(isset($permission['permissions']['category']['can-delete'])) checked
-                                                                   @endif value="1"
-                                                                   name="permissions[category][can-delete]"/>
-                                                            <span class="form-check-label">حذف</span>
-                                                        </label>
-                                                        <!--end::Checkbox-->
-                                                    </div>
-                                                    <!--end::Wrapper-->
-                                                </td>
-                                                <!--end::Input group-->
-                                            </tr>
-
-                                            <tr>
-                                                <!--begin::Label-->
                                                 <td class="text-gray-800">المدراء</td>
                                                 <!--end::Label-->
                                                 <!--begin::Input group-->
@@ -439,45 +386,38 @@
                                             </tr>
                                             <tr>
                                                 <!--begin::Label-->
-                                                <td class="text-gray-800">الأقسام</td>
+                                                <td class="text-gray-800">الاقسام</td>
                                                 <!--end::Label-->
                                                 <!--begin::Input group-->
                                                 <td>
                                                     <!--begin::Wrapper-->
                                                     <div class="d-flex">
                                                         <!--begin::Checkbox-->
-                                                        <label
-                                                            class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                   @if(isset($permission['permissions']['section']['can-add'])) checked
-                                                                   @endif value="1" name="permissions[section][can-add]"/>
+                                                        <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['category']['can-add'])) checked
+                                                                   @endif  name="permissions[category][can-add]" />
                                                             <span class="form-check-label">اضافة</span>
                                                         </label>
                                                         <!--end::Checkbox-->
                                                         <!--begin::Checkbox-->
-                                                        <label
-                                                            class="form-check form-check-custom form-check-solid me-5 me-lg-20">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                   @if(isset($permission['permissions']['section']['can-edit'])) checked
-                                                                   @endif value="1" name="permissions[section][can-edit]"/>
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1"  @if(isset($permission['permissions']['category']['can-edit'])) checked
+                                                                   @endif  name="permissions[category][can-edit]" />
                                                             <span class="form-check-label">تعديل</span>
                                                         </label>
                                                         <!--end::Checkbox-->
                                                         <!--begin::Checkbox-->
-                                                        <label
-                                                            class="form-check form-check-custom form-check-solid me-5 me-lg-20">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                   @if(isset($permission['permissions']['section']['can-show'])) checked
-                                                                   @endif value="1" name="permissions[section][can-show]"/>
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['category']['can-show'])) checked
+                                                                   @endif  name="permissions[category][can-show]" />
                                                             <span class="form-check-label">عرض</span>
                                                         </label>
                                                         <!--end::Checkbox-->
                                                         <!--begin::Checkbox-->
-                                                        <label
-                                                            class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
                                                             <input class="form-check-input" type="checkbox" value="1"
-                                                                   @if(isset($permission['permissions']['section']['can-delete'])) checked
-                                                                   @endif name="permissions[section][can-delete]"/>
+                                                                   @if(isset($permission['permissions']['category']['can-delete'])) checked
+                                                                   @endif name="permissions[category][can-delete]" />
                                                             <span class="form-check-label">حذف</span>
                                                         </label>
                                                         <!--end::Checkbox-->
@@ -486,6 +426,253 @@
                                                 </td>
                                                 <!--end::Input group-->
                                             </tr>
+                                            <tr>
+                                                <!--begin::Label-->
+                                                <td class="text-gray-800">الالعاب</td>
+                                                <!--end::Label-->
+                                                <!--begin::Input group-->
+                                                <td>
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex">
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['game']['can-add'])) checked
+                                                                   @endif  name="permissions[game][can-add]" />
+                                                            <span class="form-check-label">اضافة</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['game']['can-edit'])) checked
+                                                                   @endif  name="permissions[game][can-edit]" />
+                                                            <span class="form-check-label">تعديل</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['game']['can-show'])) checked
+                                                                   @endif  name="permissions[game][can-show]" />
+                                                            <span class="form-check-label">عرض</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['game']['can-delete'])) checked
+                                                                   @endif  name="permissions[game][can-delete]" />
+                                                            <span class="form-check-label">حذف</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </td>
+                                                <!--end::Input group-->
+                                            </tr>
+                                            <tr>
+                                                <!--begin::Label-->
+                                                <td class="text-gray-800">الانواع</td>
+                                                <!--end::Label-->
+                                                <!--begin::Input group-->
+                                                <td>
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex">
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['type']['can-add'])) checked
+                                                                   @endif  name="permissions[type][can-add]" />
+                                                            <span class="form-check-label">اضافة</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['type']['can-edit'])) checked
+                                                                   @endif  name="permissions[type][can-edit]" />
+                                                            <span class="form-check-label">تعديل</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['type']['can-show'])) checked
+                                                                   @endif  name="permissions[type][can-show]" />
+                                                            <span class="form-check-label">عرض</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['type']['can-delete'])) checked
+                                                                   @endif  name="permissions[type][can-delete]" />
+                                                            <span class="form-check-label">حذف</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </td>
+                                                <!--end::Input group-->
+                                            </tr>
+                                            <tr>
+                                                <!--begin::Label-->
+                                                <td class="text-gray-800">المراحل</td>
+                                                <!--end::Label-->
+                                                <!--begin::Input group-->
+                                                <td>
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex">
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['level']['can-add'])) checked
+                                                                   @endif  name="permissions[level][can-add]" />
+                                                            <span class="form-check-label">اضافة</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['level']['can-edit'])) checked
+                                                                   @endif  name="permissions[level][can-edit]" />
+                                                            <span class="form-check-label">تعديل</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['level']['can-show'])) checked
+                                                                   @endif  name="permissions[level][can-show]" />
+                                                            <span class="form-check-label">عرض</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['level']['can-delete'])) checked
+                                                                   @endif  name="permissions[level][can-delete]" />
+                                                            <span class="form-check-label">حذف</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </td>
+                                                <!--end::Input group-->
+                                            </tr>
+                                            <tr>
+                                                <!--begin::Label-->
+                                                <td class="text-gray-800">الكلمات</td>
+                                                <!--end::Label-->
+                                                <!--begin::Input group-->
+                                                <td>
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex">
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['word']['can-add'])) checked
+                                                                   @endif  name="permissions[word][can-add]" />
+                                                            <span class="form-check-label">اضافة</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['word']['can-edit'])) checked
+                                                                   @endif  name="permissions[word][can-edit]" />
+                                                            <span class="form-check-label">تعديل</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['word']['can-show'])) checked
+                                                                   @endif  name="permissions[word][can-show]" />
+                                                            <span class="form-check-label">عرض</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['word']['can-delete'])) checked
+                                                                   @endif  name="permissions[word][can-delete]" />
+                                                            <span class="form-check-label">حذف</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </td>
+                                                <!--end::Input group-->
+                                            </tr>
+                                            <tr>
+                                                <!--begin::Label-->
+                                                <td class="text-gray-800">الصور</td>
+                                                <!--end::Label-->
+                                                <!--begin::Input group-->
+                                                <td>
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex">
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['image']['can-add'])) checked
+                                                                   @endif  name="permissions[image][can-add]" />
+                                                            <span class="form-check-label">اضافة</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['image']['can-edit'])) checked
+                                                                   @endif  name="permissions[image][can-edit]" />
+                                                            <span class="form-check-label">تعديل</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['image']['can-show'])) checked
+                                                                   @endif  name="permissions[image][can-show]" />
+                                                            <span class="form-check-label">عرض</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['image']['can-delete'])) checked
+                                                                   @endif  name="permissions[image][can-delete]" />
+                                                            <span class="form-check-label">حذف</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </td>
+                                                <!--end::Input group-->
+                                            </tr>
+                                            <tr>
+                                                <!--begin::Label-->
+                                                <td class="text-gray-800">الصوتيات</td>
+                                                <!--end::Label-->
+                                                <!--begin::Input group-->
+                                                <td>
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex">
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['audio']['can-add'])) checked
+                                                                   @endif  name="permissions[audio][can-add]" />
+                                                            <span class="form-check-label">اضافة</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['audio']['can-edit'])) checked
+                                                                   @endif  name="permissions[audio][can-edit]" />
+                                                            <span class="form-check-label">تعديل</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['audio']['can-show'])) checked
+                                                                   @endif  name="permissions[audio][can-show]" />
+                                                            <span class="form-check-label">عرض</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" @if(isset($permission['permissions']['audio']['can-delete'])) checked
+                                                                   @endif  name="permissions[audio][can-delete]" />
+                                                            <span class="form-check-label">حذف</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </td>
+                                                <!--end::Input group-->
+                                            </tr>
+
                                             <tr>
                                                 <!--begin::Label-->
                                                 <td class="text-gray-800">الصلاحيات</td>
