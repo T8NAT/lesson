@@ -1090,6 +1090,16 @@
                                                     </a>
                                                     <!--end:Menu link-->
                                                 </div>
+                                                <div class="menu-item">
+                                                    <!--begin:Menu link-->
+                                                    <a class="menu-link" href="{{route('levels.index')}}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+                                                        <span class="menu-title">{{'مراحل الالعاب'}}</span>
+                                                    </a>
+                                                    <!--end:Menu link-->
+                                                </div>
 {{--                                        @if (userHasPermission('game', 'can-show'))--}}
                                         <!--begin:Menu item-->
                                         <div class="menu-item">
