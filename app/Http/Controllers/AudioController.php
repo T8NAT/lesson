@@ -15,13 +15,16 @@ class AudioController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Audio::query()->latest()->get();
+            $data = Audio::query()->latest();
             return datatables()->of($data)
                 ->addColumn('actions', function ($row) {
                     return view('cms.audio.partials.actions', compact('row'))->render();
                 })
                 ->addColumn('checkbox', function ($row) {
                     return '<input class="form-check-input" type="checkbox"  id="select-all"  data-kt-check-target="#kt_audio_table .form-check-input" value="1" data-id="'.$row->id.'">';
+                })
+                ->editColumn('description', function ($row) {
+                    return $row->name ?? 'لا يوجد اسم';
                 })
                 ->editColumn('description', function ($row) {
                     return $row->description ?? 'لا يوجد وصف';
