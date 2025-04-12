@@ -6,7 +6,7 @@
         <!--begin::Heading-->
         <div class="card-border mb-13 text-center">
             <!--begin::Title-->
-            <h1 class="mb-3">اضافة قسم جديد</h1>
+            <h1 class="mb-3">اضافة صوت جديد</h1>
             <!--end::Title-->
             <!--begin::Description-->
             <div class="text-gray-400 fw-bold fs-5">يمكنك تصفح قائمة الاصوات من
