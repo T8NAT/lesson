@@ -165,29 +165,52 @@ class GameController extends Controller
     }
     private function handleSoundGame($game, $category, $student_id)
     {
-        $wordsInCategory = $category->words()->get();
-        if ($wordsInCategory->isEmpty()) {
-            return ControllerHelper::generateResponseApi(false, 'لا توجد كلمات في هذا القسم.', null, 404);
+        $possibleCorrectItems = Word::where('category_id', $category->id)
+            ->whereNotNull('audio_id')
+            ->with('audio')
+            ->get();
+
+        if (!$possibleCorrectItems) {
+            return ControllerHelper::generateResponseApi(false, 'لا توجد مفردات مرتبطة بملف صوتي في هذا القسم لبدء اللعبة.', null, 404);
         }
 
-        $correctWord = $wordsInCategory->random();
-        $otherWords = $wordsInCategory->where('id', '!=', $correctWord->id)->pluck('name')->random(2)->values();
+        $firstLevel = Level::query()->where('category_id', $category->id)
+            ->whereHas('games', function ($query) use ($game) {
+                $query->where('games.id', $game->id);
+            })->orderBy('level_number')
+            ->first();
 
-        $gameState = [
-            'game_type' => 'صوت',
-            'level_id' => $correctWord->level_id,
-            'category_id' => $category->id,
-            'correct_answer' => $correctWord->name
-        ];
 
-        Cache::put("student_{$student_id}_game_state", $gameState, now()->addMinutes(10));
+                $correctItem = $possibleCorrectItems->random();
+                $correctWord = $correctItem->word;
 
-        return ControllerHelper::generateResponseApi(true, 'تم جلب البيانات بنجاح', [
-            'correct_word' => $correctWord->name,
-            'sound' => $correctWord->sound,
-            'wrong_words' => $otherWords,
-            'level_id' => $correctWord->level_id,
-        ]);
+                $correctItem->loadMissing('audio');
+
+                if (!$correctItem->audio || empty($correctItem->audio->path)) {
+                    Log::error("Audio relationship or path is missing for VocabularyItem ID: " . $correctItem->id);
+                    return ControllerHelper::generateResponseApi(false, 'حدث خطأ: لم يتم العثور على ملف الصوت المرتبط.', null, 500);
+                }
+                $correctAudioPath = $correctItem->audio->path;
+
+                if (Auth::guard('student')->check()) {
+                    $studentId = Auth::guard('student')->id();
+                    $gameState = [
+                        'game_type' => 'صوت',
+                        'level_id' => $firstLevel->id,
+                        'category_id' => $category->id,
+                        'correct_answer' => $correctWord
+                    ];
+                    Cache::put("student_{$studentId}_game_state", $gameState, now()->addMinutes(10));
+                }
+                $data = [
+                    'game' => $game->name,
+                    'category_name' => $category->name,
+                    'level_name' => $firstLevel->name ,
+                    'audio_url' => url(Storage::url($correctAudioPath)),
+                    'correct_answer' => $correctWord
+                ];
+                return ControllerHelper::generateResponseApi(true, 'تم تشغيل لعبة المحادثات بنجاح', $data, 200);
+
     }
 
 
@@ -211,96 +234,89 @@ class GameController extends Controller
             Log::info("Student {$studentId} replayed Level {$levelId}. No points awarded.");
             return true;
         }
-
-        // DB::transaction(function () use ($student, $level, $levelId) { ... });
     }
 
     public function checkAnswer(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'answer' => 'required|string|max:191',
-        ]);
+       $validator = Validator::make($request->all(), [
+           'answer' => 'required|string|max:191',
+       ]);
+       if ($validator->fails()) {
+           return ControllerHelper::generateResponseApi(false,'الاجابة مطلوبة',$validator->errors()->all(), 422);
+       }
+       if (!Auth::guard('student')->check()) {
+           return ControllerHelper::generateResponseApi(false,'المستخدم غير مسجل للدخول', null, 401);
+       }
+       $studentId = Auth::guard('student')->user()->id;
+       $gameState = Cache::get("student_{$studentId}_game_state");
+       if (empty($gameState)) {
+           return ControllerHelper::generateResponseApi(false,' لم يتم العثور على لعبة نشطة، او انتهت  مدة الجلسة !', null, 404);
+       }
+       $studentAnswer = strtolower(trim($request->input('answer')));
+       $correctAnswer = strtolower(trim($gameState['correct_answer']));
+       $levelId = $gameState['level_id'];
+       $remainingWords = $gameState['remaining_words'];
 
-        if ($validator->fails()) {
-            return ControllerHelper::generateResponseApi(false, 'الإجابة مطلوبة.', $validator->errors(), 422);
-        }
+       $isCorrect = ($studentAnswer === $correctAnswer);
 
-        if (!Auth::guard('student')->check()) {
-            return ControllerHelper::generateResponseApi(false, 'المستخدم غير مسجل للدخول.', null, 401);
-        }
+       if ($isCorrect) {
+           $remainingWords = array_values(array_filter($remainingWords, fn($word) => strtolower(trim($word)) !== $correctAnswer));
+           if (empty($remainingWords)) {
+               $level = Level::query()->find($levelId);
+               Student::query()->find($studentId)->addPoints($level->points_reward);
+               $nextLevel = $this->getNextLevel($levelId, $gameState['category_id']);
+               if ($nextLevel) {
+                   $possibleWords = Word::where('category_id', $gameState['category_id'])
+                   ->whereNotNull('image_id')
+                   ->with('image')
+                   ->pluck('word')
+                   ->shuffle()
+                   ->values();
+                   $newWord = $possibleWords->first();
+                   $gameState= [
+                     'game_type' => 'صورة وكلمات',
+                       'level_id' => $nextLevel->id,
+                       'category_id' => $gameState['category_id'],
+                       'remaining_words' => $possibleWords->toArray(),
+                       'correct_answer' => $newWord,
+                   ];
+                   Cache::put("student_{$studentId}_game_state", $gameState, now()->addMinutes(10));
+                   $data = [
+                       'next_level' => $nextLevel->name,
+                       'points_awarded' => $level->points_reward,
+                   ];
+                   return ControllerHelper::generateResponseApi(true,'اجابة صحيحة! انتقلت للمرحلة التالية',$data);
+               }else{
+                   Cache::Forget("student_{$studentId}_game_state");
+                   $data = [
+                       'points_awarded' => $level->points_reward,
+                   ];
+                   return ControllerHelper::generateResponseApi(true,'اجابة صحيحة! لقد اكملت اللعبة بالكامل.أحسنت',$data);
+               }
 
-        $studentId = Auth::guard('student')->id();
-        $gameState = Cache::get("student_{$studentId}_game_state");
+           }else{
+               $newWord = $remainingWords[0];
+               $correctItem = Word::where('word', $newWord)
+                   ->where('category_id', $gameState['category_id'])
+                   ->with('image')->first();
+               $otherWords = Word::where('category_id', $gameState['category_id'])
+                   ->pluck('word')->filter(fn($w) => $w !== $newWord)->shuffle()->take(3);
 
-        if (!$gameState) {
-            return ControllerHelper::generateResponseApi(false, 'لم يتم العثور على لعبة نشطة أو انتهت مدة الجلسة.', null, 404);
-        }
+               $words = collect([$newWord])->merge($otherWords)->shuffle();
+               $gameState['correct_answer'] = $newWord;
+               $gameState['remaining_words'] = $remainingWords;
+               Cache::put("student_{$studentId}_game_state", $gameState, now()->addMinutes(10));
+               $data = [
+                   'image_url' => url(Storage::url($correctItem->image->image)),
+                   'words' => $words->values()->all(),
+                   'correct_word' => $newWord,
+               ];
+               return ControllerHelper::generateResponseApi(true, 'إجابة صحيحة! إليك صورة جديدة.', $data);
+           }
+       }else{
+           return ControllerHelper::generateResponseApi(false, 'إجابة خاطئة. حاول مرة أخرى!', ['correct_answer' => $correctAnswer], 422);
 
-        $studentAnswer = strtolower(trim($request->input('answer')));
-        $correctAnswer = strtolower(trim($gameState['correct_answer']));
-        $levelId = $gameState['level_id'];
-        $remainingWords = $gameState['remaining_words'];
-
-        $isCorrect = ($studentAnswer === $correctAnswer);
-
-        if ($isCorrect) {
-            $remainingWords = array_values(array_filter($remainingWords, fn($word) => strtolower(trim($word)) !== $correctAnswer));
-
-            if (empty($remainingWords)) {
-                $level = Level::find($levelId);
-                Student::find($studentId)->addPoints($level->points_reward);
-
-                $nextLevel = $this->getNextLevel($levelId, $gameState['category_id']);
-                if ($nextLevel) {
-                    $possibleWords = Word::where('category_id', $gameState['category_id'])
-                        ->whereNotNull('image_id')->with('image')->pluck('word')->shuffle()->values();
-
-                    $newWord = $possibleWords->first();
-                    $gameState = [
-                        'game_type' => 'صورة وكلمات',
-                        'level_id' => $nextLevel->id,
-                        'category_id' => $gameState['category_id'],
-                        'remaining_words' => $possibleWords->toArray(),
-                        'correct_answer' => $newWord,
-                    ];
-
-                    Cache::put("student_{$studentId}_game_state", $gameState, now()->addMinutes(10));
-
-                    return ControllerHelper::generateResponseApi(true, 'إجابة صحيحة! انتقلت إلى المرحلة التالية.', [
-                        'next_level' => $nextLevel->name,
-                        'points_awarded' => $level->points_reward
-                    ]);
-                } else {
-                    Cache::forget("student_{$studentId}_game_state");
-                    return ControllerHelper::generateResponseApi(true, 'إجابة صحيحة! لقد أكملت اللعبة بالكامل. أحسنت.', [
-                        'points_awarded' => $level->points_reward
-                    ]);
-                }
-            } else {
-                $newWord = $remainingWords[0];
-                $correctItem = Word::where('word', $newWord)
-                    ->where('category_id', $gameState['category_id'])
-                    ->with('image')->first();
-
-                $otherWords = Word::where('category_id', $gameState['category_id'])
-                    ->pluck('word')->filter(fn($w) => $w !== $newWord)->shuffle()->take(3);
-
-                $words = collect([$newWord])->merge($otherWords)->shuffle();
-
-                $gameState['correct_answer'] = $newWord;
-                $gameState['remaining_words'] = $remainingWords;
-
-                Cache::put("student_{$studentId}_game_state", $gameState, now()->addMinutes(10));
-
-                return ControllerHelper::generateResponseApi(true, 'إجابة صحيحة! إليك كلمة جديدة.', [
-                    'image_url' => url(Storage::url($correctItem->image->image)),
-                    'words' => $words->values()->all(),
-                    'correct_word' => $newWord,
-                ]);
-            }
-        } else {
-            return ControllerHelper::generateResponseApi(false, 'إجابة خاطئة !', ['correct_answer' => $correctAnswer], 422);
-        }
+       }
     }
 
     private function nextWordOrLevel($studentId, $gameState, $wasCorrect, $labels)
