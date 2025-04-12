@@ -88,79 +88,70 @@
                     <div class="card card-flush py-4">
                         <div class="card-header">
                             <div class="card-title">
-                                <h2>{{'المفردات والصور المرتبطة'}}</h2>
+                                <h2>{{ 'المفردات والصور المرتبطة' }}</h2>
                             </div>
                         </div>
+
                         <div class="card-body pt-0">
-                            <div class="form-group row border-top pt-5 mb-3 " data-index="__INDEX__">
-                                <div class="col-md-5 fv-row">
-                                    <label class="form-label required">{{'المفردة (الكلمة)'}}:</label>
-                                    <input type="text" name="items[__INDEX__][word]" class="form-control mb-2" placeholder="{{'أدخل الكلمة'}}" required/>
-                                    @error('items.__INDEX__.word')
-                                    <div class="text-danger fs-7 mt-2">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-md-5 fv-row">
-                                    <label class="form-label">{{'الصورة المرتبطة (اختياري)'}}:</label>
-                                    <select name="items[__INDEX__][image_id]" class="form-select item-image-select" data-control="select2" data-placeholder="اختر صورة..." data-allow-clear="true">
-                                        <option></option>
-                                        @if(isset($images))
-                                            @foreach($images as $key => $image)
-                                                <option value="{{ $image->id }}">{{ $key+1 }} - {{ Str::limit(basename($image->name), 20) }}</option>
-                                            @endforeach
-                                        @endif
-                                    </select>
-                                    @error('items.__INDEX__.image_id')
-                                    <div class="text-danger fs-7 mt-2">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                            <!-- حاوية العناصر -->
+                            <div id="vocabulary-items-container"></div>
 
-                                <div class="col-md-5 fv-row">
-                                    <label class="form-label">{{'الاصوات المرتبطة (اختياري)'}}:</label>
-                                    <select class="form-select mb-2" name="items[__INDEX__][audio_id]" data-control="select2" data-hide-search="true" data-placeholder="اختر صوت..."  data-allow-clear="true">
-                                        <option></option>
-                                        @if(isset($audios))
-                                            @foreach($audios as $key => $audio)
-                                                <option value="{{ $audio->id }}">{{ $key+1 }} - {{ Str::limit(basename($audio->name), 20) }}</option>
-                                            @endforeach
-                                        @endif
-                                    </select>
-                                    @error('items.__INDEX__.audio_id')
-                                    <div class="text-danger fs-7 mt-2">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-2 d-flex align-items-end">
-                                    <button type="button" class="btn btn-sm btn-light-danger remove-vocabulary-item">
-                                        <i class="ki-duotone ki-trash fs-5"></i>{{'حذف'}}
-                                    </button>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="card-body pt-0">
-                            <div>
-                            </div>
-                            <button type="button" class="btn btn-light-primary mt-5">
-                                <i class="ki-duotone ki-plus fs-3"></i>{{'إضافة مفردة جديدة'}}
+                            <!-- زر إضافة -->
+                            <button type="button" class="btn btn-light-primary mt-5" onclick="addVocabularyItem()">
+                                <i class="ki-duotone ki-plus fs-3"></i>{{ 'إضافة مفردة جديدة' }}
                             </button>
+
                             @error('items')
                             <div class="text-danger fs-7 mt-2">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
-                    <!--end::Vocabulary Items-->
 
+                    <!-- زر الحفظ -->
                     <div class="d-flex justify-content-end">
-                        <a href="{{ route('words.index') }}" id="kt_add_word_cancel" class="btn btn-light me-5">{{'الغاء'}}</a>
+                        <a href="{{ route('words.index') }}" id="kt_add_word_cancel" class="btn btn-light me-5">{{ 'الغاء' }}</a>
                         <button type="submit" class="btn btn-primary" id="kt_add_word_submit">
-                            <span class="indicator-label">{{'حفظ المفردات'}}</span>
-                            <span class="indicator-progress">{{'الرجاء الانتظار'}}...
-                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-                            </span>
+                            <span class="indicator-label">{{ 'حفظ المفردات' }}</span>
+                            <span class="indicator-progress">{{ 'الرجاء الانتظار' }}...
+                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+            </span>
                         </button>
                     </div>
                 </div>
+                <template id="vocabulary-item-template">
+                    <div class="form-group row border-top pt-5 mb-3 vocabulary-item" data-index="__INDEX__">
+                        <div class="col-md-5 fv-row">
+                            <label class="form-label required">{{ 'المفردة (الكلمة)' }}:</label>
+                            <input type="text" name="items[__INDEX__][word]" class="form-control mb-2" placeholder="{{ 'أدخل الكلمة' }}" required/>
+                        </div>
+
+                        <div class="col-md-5 fv-row">
+                            <label class="form-label">{{ 'الصورة المرتبطة (اختياري)' }}:</label>
+                            <select name="items[__INDEX__][image_id]" class="form-select item-image-select" data-control="select2" data-placeholder="اختر صورة..." data-allow-clear="true">
+                                <option></option>
+                                @foreach($images ?? [] as $key => $image)
+                                    <option value="{{ $image->id }}">{{ $key + 1 }} - {{ Str::limit(basename($image->name), 20) }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-5 fv-row">
+                            <label class="form-label">{{ 'الاصوات المرتبطة (اختياري)' }}:</label>
+                            <select name="items[__INDEX__][audio_id]" class="form-select mb-2" data-control="select2" data-placeholder="اختر صوت..." data-allow-clear="true">
+                                <option></option>
+                                @foreach($audios ?? [] as $key => $audio)
+                                    <option value="{{ $audio->id }}">{{ $key + 1 }} - {{ Str::limit(basename($audio->name), 20) }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="button" class="btn btn-sm btn-light-danger remove-vocabulary-item">
+                                <i class="ki-duotone ki-trash fs-5"></i>{{ 'حذف' }}
+                            </button>
+                        </div>
+                    </div>
+                </template>
                 <!--end::Main column-->
             </form>
         </div>
@@ -173,12 +164,33 @@
 
 @section('scripts')
      <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/i18n/ar.min.js"></script>
-     <script src="{{asset('assets/plugins/custom/formrepeater/formrepeater.bundle.js')}}"></script>
      <script src="{{asset('assets/js/cms/words/save-word.js')}}"></script>
 
      <script>
          const categories = {
              get: "{{ route('getCategories') }}",
          };
+     </script>
+     <script>
+         let currentIndex = 0;
+
+         function addVocabularyItem() {
+             const template = document.getElementById('vocabulary-item-template').innerHTML;
+             const newItem = template.replace(/__INDEX__/g, currentIndex);
+             const container = document.getElementById('vocabulary-items-container');
+             const wrapper = document.createElement('div');
+             wrapper.innerHTML = newItem;
+             container.appendChild(wrapper);
+
+             $(wrapper).find('[data-control="select2"]').select2();
+
+             wrapper.querySelector('.remove-vocabulary-item').addEventListener('click', function () {
+                 wrapper.remove();
+             });
+
+             currentIndex++;
+         }
+         addVocabularyItem();
+
      </script>
 @endsection
