@@ -11,8 +11,5 @@ protected $fillable = [
     'name',
     'image',
 ];
-    public function word(): BelongsTo
-    {
-        return $this->belongsTo(Word::class);
-    }
+
 }
