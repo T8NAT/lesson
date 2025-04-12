@@ -155,6 +155,10 @@ class GameController extends Controller
 
         $is_Updated = $game->update($data);
 
+        if ($request->has('category_id')) {
+            $game->categories()->sync($request->category_id);
+        }
+
         $uploadedFiles = session()->get('uploaded_files', []);
         $savedImages = $UploadService->moveMedia($uploadedFiles,'media/games');
 
@@ -223,5 +227,13 @@ class GameController extends Controller
             'name' => $name,
             'original_name' => $file->hashName(),
         ]);
+    }
+    public function getGames(Request $request)
+    {
+        $page = $request->get('page', 1);
+        $games = Game::latest()->paginate(10, ['*'], 'page', $page);
+
+        return response()->json($games);
+
     }
 }
