@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ControllerHelper;
+use App\Models\Audio;
 use App\Models\Image;
 use App\Models\Word;
 use App\Services\UploadService;
@@ -39,7 +40,8 @@ class WordController extends Controller
     public function create()
     {
         $images = Image::query()->latest()->get();
-        return view('cms.word.create', compact('images'));
+        $audios = Audio::query()->latest()->get();
+        return view('cms.word.create', compact('images','audios'));
     }
 
     /**
@@ -51,7 +53,7 @@ class WordController extends Controller
        $request->validate([
             'category_id' => 'required|exists:categories,id',
             'items' => 'required|array|min:1',
-            'items.*.word' => 'required|string|max:191',
+            'items.*.word' => 'required|string|max:191|unique:words,word',
             'items.*.image_id' => 'nullable|integer|exists:images,id',
             'items.*.audio_id' => ['nullable', 'integer','exists:audios,id'],
         ],
@@ -74,27 +76,6 @@ class WordController extends Controller
                 if (empty(trim($itemData['word']))) {
                     continue;
                 }
-              /*  $audioPath = null;
-
-                $audioInputName = "items.{$index}.audio";
-
-                if ($request->hasFile($audioInputName) && $request->file($audioInputName)->isValid()) {
-                    $audioFile = $request->file($audioInputName);
-
-                    $storagePath = 'audio/words';
-
-                    $audioPath = $audioFile->store($storagePath, 'public');
-
-                    Log::info("Stored audio for item index {$index} at path: {$audioPath}");
-
-                    if (!$audioPath) {
-                        throw new \Exception("Failed to store audio file for item at index {$index}.");
-                    }
-                } elseif ($request->hasFile($audioInputName) && !$request->file($audioInputName)->isValid()) {
-                    Log::error("Invalid audio file uploaded for item at index {$index}. Error code: " . $request->file($audioInputName)->getError());
-
-                }*/
-
                 Word::create([
                     'category_id' => $categoryId,
                     'word' => trim($itemData['word']),
@@ -103,9 +84,7 @@ class WordController extends Controller
                 ]);
             }
 
-
 //            dd($request);
-
             DB::commit();
             return ControllerHelper::generateResponse('success', 'تمت إضافة المفردات بنجاح',201);
 
@@ -117,21 +96,6 @@ class WordController extends Controller
             return ControllerHelper::generateResponse('error', 'فشلت عملية الإضافة. حدث خطأ غير متوقع.', 500);
         }
     }
-//    public function store(Request $request)
-//    {
-//        $request->validate([
-//            'category_id' => 'required|exists:categories,id',
-//            'words' => 'required|array',
-//        ]);
-//
-//        $data = $request->only(['category_id', 'words']);
-//        $is_saved = Word::query()->create($data);
-//        if ($is_saved) {
-//            return ControllerHelper::generateResponse('success','تم اضافة الكلمات بنجاح');
-//        }else{
-//            return ControllerHelper::generateResponse('error','فشلت عملية الاضافة حاول مرة اخرى', 500);
-//        }
-//    }
 
     /**
      * Display the specified resource.
@@ -148,7 +112,9 @@ class WordController extends Controller
     {
         $word = Word::query()->findOrFail($id);
         $images = Image::query()->latest()->get();
-        return view('cms.word.edit', compact('word', 'images'));
+        $audios = Audio::query()->latest()->get();
+
+        return view('cms.word.edit', compact('word', 'images', 'audios'));
     }
 
     /**
@@ -162,7 +128,7 @@ class WordController extends Controller
             'items' => 'required|array|min:1',
             'items.*.word' => 'required|string|max:191',
             'items.*.image_id' => 'nullable|integer|exists:images,id',
-            'items.audio' => 'nullable|string|max:255',
+            'items.*.audio_id' => ['nullable', 'integer','exists:audios,id'],
         ],
             [
                 'category_id.required' => 'حقل القسم مطلوب.',
@@ -171,6 +137,8 @@ class WordController extends Controller
                 'items.*.word.required' => 'حقل المفردة (الكلمة) مطلوب لكل عنصر.',
                 'items.*.word.max' => 'يجب ألا يتجاوز طول المفردة 191 حرفًا.',
                 'items.*.image_id.exists' => 'معرف الصورة المحدد غير صالح.',
+                'items.*.audio_id.exists' => 'معرف الصوت المحدد غير صالح.',
+
             ]);
 
 
@@ -189,7 +157,7 @@ class WordController extends Controller
                     'category_id' => $categoryId,
                     'word' => trim($itemData['word']),
                     'image_id' => $itemData['image_id'] ?? null,
-                    'audio' => $itemData['audio'] ?? null,
+                    'audio_id' => $itemData['audio_id'] ?? null,
                 ]);
             }
 
