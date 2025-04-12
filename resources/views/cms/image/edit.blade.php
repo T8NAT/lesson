@@ -19,7 +19,7 @@
     <div id="kt_app_content" class="app-content flex-column-fluid">
         <!--begin::Content container-->
         <div id="kt_app_content_container" class="app-container container-xxl">
-            <form id="kt_add_image_form" action="{{ route('images.update',$image->id) }}" enctype="multipart/form-data" method="POST" class="form d-flex flex-column flex-lg-row" data-kt-redirect="{{route('images.create')}}">
+            <form id="kt_add_image_form" action="{{ route('images.update',$image->id) }}" enctype="multipart/form-data" method="POST" class="form d-flex flex-column flex-lg-row" data-kt-redirect="{{route('images.index')}}">
                 @csrf
                 @method('PUT')
                 <!--begin::Aside column-->
