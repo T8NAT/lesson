@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('levels', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('game_id')->constrained('games')->onDelete('cascade');
             $table->unsignedInteger('level_number');
             $table->string('name')->nullable();
             $table->text('description')->nullable();
             $table->unsignedInteger('points_reward')->default(10);
             $table->boolean('is_active')->default(true);
+            $table->foreignId('category_id');
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
             $table->timestamps();
-            $table->unique(['game_id', 'level_number']);
         });
     }
 
