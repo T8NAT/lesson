@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AudioController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\LevelController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TypeController;
 use App\Http\Controllers\UserController;
@@ -37,9 +38,11 @@ Route::prefix('dashboard')->middleware(['auth:user,admin'])->group(function () {
         'images'           =>   ImageController::class,
         'students'         =>   StudentController::class,
         'audios'           =>   AudioController::class,
+        'levels'           =>   LevelController::class,
     ]);
 
     Route::get('get-categories',[CategoryController::class,'getCategories'])->name('getCategories');
+    Route::get('get-games',[GameController::class,'getGames'])->name('getGames');
     Route::get('get-types',[TypeController::class,'getTypes'])->name('getTypes');
 
     Route::put('user-update-email/{id}',[UserController::class,'updateEmail'])->name('user-update-email');
