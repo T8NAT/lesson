@@ -234,48 +234,6 @@
                                 @enderror
                             </div>
                             <!--end::Input group-->
-
-                            <!--begin::Media-->
-                            <div class="card card-flush py-4" id="media-section">
-                                <!--begin::Card header-->
-                                <div class="card-header">
-                                    <div class="card-title">
-                                        <h2>الوسائط</h2>
-                                    </div>
-                                </div>
-                                <!--end::Card header-->
-                                <!--begin::Card body-->
-                                <div class="card-body pt-0">
-                                    <!--begin::Input group-->
-                                    <div class="fv-row mb-2">
-                                        <!--begin::Dropzone-->
-                                        <div class="dropzone" id="kt_add_game_media">
-                                            <!--begin::Message-->
-                                            <div class="dz-message needsclick">
-                                                <!--begin::Icon-->
-                                                <i class="ki-duotone ki-file-up text-primary fs-3x">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>
-                                                <!--end::Icon-->
-                                                <!--begin::Info-->
-                                                <div class="ms-4">
-                                                    <h3 class="fs-5 fw-bold text-gray-900 mb-1">{{'قم باسقاط الملفات هنا او اضغط هنا لرفع الملفات'}}.</h3>
-                                                    <span class="fs-7 fw-semibold text-gray-400">{{'تحميل مايصل الى 10 صور'}}</span>
-                                                </div>
-                                                <!--end::Info-->
-                                            </div>
-                                        </div>
-                                        <!--end::Dropzone-->
-                                    </div>
-                                    <!--end::Input group-->
-                                    <!--begin::Description-->
-                                    <div class="text-muted fs-7">{{'قم بتعيين معرض وسائط اللعبة'}}.</div>
-                                    <!--end::Description-->
-                                </div>
-                                <!--end::Card header-->
-                            </div>
-                            <!--end::Media-->
                         </div>
                         <!--end::Card header-->
                     </div>
@@ -334,7 +292,6 @@
     <!--end::Content-->
 @endsection
 @section('scripts')
-    <script src="{{asset('assets/plugins/custom/formrepeater/formrepeater.bundle.js')}}"></script>
     <script src="{{asset('assets/js/cms/games/save-game.js')}}"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/i18n/ar.min.js"></script>
 
