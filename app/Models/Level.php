@@ -9,21 +9,32 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Level extends Model
 {
+    protected $table = 'levels';
     protected $fillable = [
-        'game_id',
         'level_number',
         'name',
         'description',
         'points_reward',
         'is_active',
+        'category_id',
     ];
 
-    public function game():BelongsTo {
-        return $this->belongsTo(Game::class);
+    public function games(): BelongsToMany
+    {
+        return $this->belongsToMany(Game::class, 'game_level');
     }
 
     public function CompletedByStudents():BelongsToMany
     {
         return $this->belongsToMany(Student::class,'student_level')->withPivot('completed_at');
     }
+
+
+    public function category():BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+
+
 }
