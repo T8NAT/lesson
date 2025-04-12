@@ -238,6 +238,228 @@
                                             </tr>
                                             <tr>
                                                 <!--begin::Label-->
+                                                <td class="text-gray-800">الالعاب</td>
+                                                <!--end::Label-->
+                                                <!--begin::Input group-->
+                                                <td>
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex">
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[game][can-add]" />
+                                                            <span class="form-check-label">اضافة</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[game][can-edit]" />
+                                                            <span class="form-check-label">تعديل</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[game][can-show]" />
+                                                            <span class="form-check-label">عرض</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[game][can-delete]" />
+                                                            <span class="form-check-label">حذف</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </td>
+                                                <!--end::Input group-->
+                                            </tr>
+                                            <tr>
+                                                <!--begin::Label-->
+                                                <td class="text-gray-800">الانواع</td>
+                                                <!--end::Label-->
+                                                <!--begin::Input group-->
+                                                <td>
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex">
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[type][can-add]" />
+                                                            <span class="form-check-label">اضافة</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[type][can-edit]" />
+                                                            <span class="form-check-label">تعديل</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[type][can-show]" />
+                                                            <span class="form-check-label">عرض</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[type][can-delete]" />
+                                                            <span class="form-check-label">حذف</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </td>
+                                                <!--end::Input group-->
+                                            </tr>
+                                            <tr>
+                                                <!--begin::Label-->
+                                                <td class="text-gray-800">المراحل</td>
+                                                <!--end::Label-->
+                                                <!--begin::Input group-->
+                                                <td>
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex">
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[level][can-add]" />
+                                                            <span class="form-check-label">اضافة</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[level][can-edit]" />
+                                                            <span class="form-check-label">تعديل</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[level][can-show]" />
+                                                            <span class="form-check-label">عرض</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[level][can-delete]" />
+                                                            <span class="form-check-label">حذف</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </td>
+                                                <!--end::Input group-->
+                                            </tr>
+                                            <tr>
+                                                <!--begin::Label-->
+                                                <td class="text-gray-800">الكلمات</td>
+                                                <!--end::Label-->
+                                                <!--begin::Input group-->
+                                                <td>
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex">
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[word][can-add]" />
+                                                            <span class="form-check-label">اضافة</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[word][can-edit]" />
+                                                            <span class="form-check-label">تعديل</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[word][can-show]" />
+                                                            <span class="form-check-label">عرض</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[word][can-delete]" />
+                                                            <span class="form-check-label">حذف</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </td>
+                                                <!--end::Input group-->
+                                            </tr>
+                                            <tr>
+                                                <!--begin::Label-->
+                                                <td class="text-gray-800">الصور</td>
+                                                <!--end::Label-->
+                                                <!--begin::Input group-->
+                                                <td>
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex">
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[image][can-add]" />
+                                                            <span class="form-check-label">اضافة</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[image][can-edit]" />
+                                                            <span class="form-check-label">تعديل</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[image][can-show]" />
+                                                            <span class="form-check-label">عرض</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[image][can-delete]" />
+                                                            <span class="form-check-label">حذف</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </td>
+                                                <!--end::Input group-->
+                                            </tr>
+                                            <tr>
+                                                <!--begin::Label-->
+                                                <td class="text-gray-800">الصوتيات</td>
+                                                <!--end::Label-->
+                                                <!--begin::Input group-->
+                                                <td>
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex">
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[audio][can-add]" />
+                                                            <span class="form-check-label">اضافة</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[audio][can-edit]" />
+                                                            <span class="form-check-label">تعديل</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[audio][can-show]" />
+                                                            <span class="form-check-label">عرض</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                        <!--begin::Checkbox-->
+                                                        <label class="form-check form-check-custom form-check-solid me-5 me-lg-20">
+                                                            <input class="form-check-input" type="checkbox" value="1" name="permissions[audio][can-delete]" />
+                                                            <span class="form-check-label">حذف</span>
+                                                        </label>
+                                                        <!--end::Checkbox-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </td>
+                                                <!--end::Input group-->
+                                            </tr>
+                                            <tr>
+                                                <!--begin::Label-->
                                                 <td class="text-gray-800">المدراء</td>
                                                 <!--end::Label-->
                                                 <!--begin::Input group-->
