@@ -21,6 +21,7 @@
         <div id="kt_app_content_container" class="app-container container-xxl">
             <form id="kt_add_audio_form" action="{{ route('audios.update',$audio->id) }}" enctype="multipart/form-data" method="POST" class="form d-flex flex-column flex-lg-row" data-kt-redirect="{{route('audios.index')}}">
                 @csrf
+                @method('PUT')
                 <!--begin::Main column-->
                 <div class="d-flex flex-column flex-row-fluid gap-7 gap-lg-10">
                     <!--begin::General options-->
