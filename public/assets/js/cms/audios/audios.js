@@ -110,7 +110,7 @@ var KTAppAudios = function () {
                         });
                     }else if(result.dismiss === Swal.DismissReason.cancel) {
                         Swal.fire({
-                            text: imageName + messages.NotDeleted,
+                            text: audioName + messages.NotDeleted,
                             icon: "error",
                             buttonsStyling: false,
                             confirmButtonText: messages.confirmButtonText,
