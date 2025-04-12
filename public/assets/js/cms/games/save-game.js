@@ -202,49 +202,59 @@ var KTAppSaveGame = function () {
 
 
     $(document).ready(function() {
-        const selectElement = $('select[name="category_id[]"]');
-        const categoryId = selectElement.data('selected-id');
-        if (categoryId) {
-            $.ajax({
-                url: categories.get,
-                dataType: 'json',
-                data: { id: categoryId }
-            }).then(function(data) {
-                if (data && data.data ) {
-                    const selectedItem = data.data.find(item => item.id == categoryId);
-                    if(selectedItem){
-                        const option = new Option(selectedItem.name, selectedItem.id, true, true);
-                        selectElement.append(option).trigger('change');
-                        initializeSelect2WithInfiniteScroll(selectElement, categories.get, categoryId);
-                    }
-                }
-            });
-        }else{
-            initializeSelect2WithInfiniteScroll(selectElement, categories.get, categoryId);
-        }
+        $('select[name="category_id[]"]').each(function() {
+            const selectElement = $(this);
+            const categoryId = selectElement.data('selected-id');
 
-        const selectElement1 = $('select[name="type_id"]');
-        const typeId = selectElement1.data('selected-id');
-        if (typeId) {
-            $.ajax({
-                url: types.get,
-                dataType: 'json',
-                data: { id: typeId }
-            }).then(function(data) {
-                if (data && data.data ) {
-                    const selectedItem = data.data.find(item => item.id == typeId);
-                    if(selectedItem){
-                        const option = new Option(selectedItem.name, selectedItem.id, true, true);
-                        selectElement1.append(option).trigger('change');
-                        initializeSelect2WithInfiniteScroll(selectElement1, types.get, typeId);
+            if (categoryId) {
+                $.ajax({
+                    url: categories.get,
+                    dataType: 'json',
+                    data: { id: categoryId }
+                }).then(function(data) {
+                    if (data && data.data ) {
+                        const selectedItem = data.data.find(item => item.id == categoryId);
+                        if(selectedItem){
+                            const option = new Option(selectedItem.name, selectedItem.id, true, true);
+                            selectElement.append(option).trigger('change');
+                            initializeSelect2WithInfiniteScroll(selectElement, categories.get, categoryId);
+                        } else {
+                            initializeSelect2WithInfiniteScroll(selectElement, categories.get, categoryId);
+                        }
                     }
-                }
-            });
-        }else{
-            initializeSelect2WithInfiniteScroll(selectElement1, types.get, typeId);
-        }
+                });
+            }else{
+                initializeSelect2WithInfiniteScroll(selectElement, categories.get, categoryId);
+            }
+        });
     });
+    $(document).ready(function() {
+        $('select[name="type_id"]').each(function() {
+            const selectElement = $(this);
+            const typeId = selectElement.data('selected-id');
 
+            if (typeId) {
+                $.ajax({
+                    url: types.get,
+                    dataType: 'json',
+                    data: { id: typeId }
+                }).then(function(data) {
+                    if (data && data.data ) {
+                        const selectedItem = data.data.find(item => item.id == typeId);
+                        if(selectedItem){
+                            const option = new Option(selectedItem.name, selectedItem.id, true, true);
+                            selectElement.append(option).trigger('change');
+                            initializeSelect2WithInfiniteScroll(selectElement, types.get, typeId);
+                        } else {
+                            initializeSelect2WithInfiniteScroll(selectElement, types.get, typeId);
+                        }
+                    }
+                });
+            }else{
+                initializeSelect2WithInfiniteScroll(selectElement, types.get, typeId);
+            }
+        });
+    });
 
     return {
         init: function () {
