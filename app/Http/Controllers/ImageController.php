@@ -93,15 +93,28 @@ class ImageController extends Controller
             'name' => 'required',
             'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
+        $image = Image::query()->findOrFail($id);
 
         $data = $request->only(['name','image']);
-        $image = $uploadService->uploadImage($request,'image','images/');
-        $data['image'] = $image;
-        $is_Saved = Image::query()->create($data);
-        if($is_Saved){
-            return ControllerHelper::generateResponse('success',"تم اضافة الصورة بنجاح",201);
+        if($image){
+            if ($request->hasFile('image')) {
+                $imagePath = public_path('storage/'.$image->image);
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
+            }
+            $newImage = $uploadService->uploadImage($request,'image','images/');
+            $data['image'] = $newImage;
         }else{
-            return ControllerHelper::generateResponse('error',"لم يتم اضافة الصورة حاول مرة اخرى !",500);
+            $data['image'] = $image->image;
+
+        }
+        $is_Updated = $image->update($data);
+
+        if($is_Updated){
+            return ControllerHelper::generateResponse('success',"تم تعديل الصورة بنجاح",201);
+        }else{
+            return ControllerHelper::generateResponse('error',"لم يتم تعديل الصورة حاول مرة اخرى !",500);
         }
     }
 
