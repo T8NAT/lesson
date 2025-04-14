@@ -31,8 +31,4 @@ class Word extends Model
         return $this->belongsTo(Audio::class);
     }
 
-    public function level(): BelongsTo {
-        return $this->belongsTo(Level::class);
-    }
-
 }
