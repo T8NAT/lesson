@@ -865,7 +865,7 @@ public function getLevelsForGame(Request $request,$gameId)
      * بدء مرحلة للعبة محددة
      * POST /api/games/{gameId}/levels/{levelId}/start
      */
-    public function startLevel(Request $request, $gameId, $levelId) // استقبال كلا المعرفين
+    public function startLevel(Request $request, $gameId, $levelId) 
     {
         $gameId = (int) $gameId;
         $levelId = (int) $levelId;
