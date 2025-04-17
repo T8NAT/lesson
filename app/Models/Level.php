@@ -24,7 +24,7 @@ class Level extends Model
         return $this->belongsToMany(Game::class, 'game_level');
     }
 
-    public function CompletedByStudents():BelongsToMany
+    public function completedByStudents():BelongsToMany
     {
         return $this->belongsToMany(Student::class,'student_level')->withPivot('completed_at');
     }
