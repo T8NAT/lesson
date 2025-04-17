@@ -20,7 +20,6 @@ class GameResource extends JsonResource
             'description' => $this->description,
             'status' => $this->status,
             'type' => TypeResource::make($this->type),
-            'images' => ImagesResource::collection($this->images),
         ];
     }
 }
