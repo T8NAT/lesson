@@ -865,7 +865,7 @@ public function getLevelsForGame(Request $request,$gameId)
      * بدء مرحلة للعبة محددة
      * POST /api/games/{gameId}/levels/{levelId}/start
      */
-    public function startLevel(Request $request, $gameId, $levelId) 
+    public function startLevel(Request $request, $gameId, $levelId)
     {
         $gameId = (int) $gameId;
         $levelId = (int) $levelId;
@@ -980,7 +980,7 @@ public function getLevelsForGame(Request $request,$gameId)
 
         if ($gameType === 'كلمات') {
             if (!$request->hasFile('image')) {
-                return ControllerHelper::generateResponseApi(false, 'لعبة الكلمات تتطلب إرسال صورة.', null, 400);
+                return ControllerHelper::generateResponseApi(false, 'لعبة البحث عن الاسماء تتطلب إرسال صورة.', null, 400);
             }
 
             $imageFile = $request->file('image');
@@ -1002,7 +1002,6 @@ public function getLevelsForGame(Request $request,$gameId)
                 }
             } catch (\Exception $e) {
                 Log::error("Image check failed for student {$studentId}, level {$levelId}: ".$e->getMessage());
-                // لا نوقف اللعبة بالضرورة، لكن قد نرجع خطأ
                 // return ControllerHelper::generateResponseApi(false, 'حدث خطأ أثناء تحليل الصورة.', null, 500);
                 $isMatch = false;
             } finally {
@@ -1034,18 +1033,30 @@ public function getLevelsForGame(Request $request,$gameId)
         if (empty($gameState['remaining_word_ids'])) {
             // المرحلة اكتملت
             $firstCompletion = $this->gameStateManager->markLevelCompleted($studentId, $levelId);
-            $this->gameStateManager->clearState($studentId, $levelId); // تنظيف الحالة
+            $this->gameStateManager->clearState($studentId, $levelId);
 
             // جلب النقاط الكلية المحدثة
             $student = Student::find($studentId);
+            $pointsAwarded = 0; // تهيئة النقاط الممنوحة لهذه الجولة
+            if ($firstCompletion && $student){
+                $level = Level::find($levelId);
+                if ($level && $level->points_reward > 0) {
+                    $student->addPoints($level->points_reward);
+                    $pointsAwarded = $level->points_reward;
+                    $student->points;
+                }
+            }
+            $student = $student->fresh(); // تحديث بيانات الطالب من قاعدة البيانات
             $totalPoints = $student ? $student->points : 0;
 
+
             return ControllerHelper::generateResponseApi(true,
-                ($isMatch ? 'إجابة صحيحة! ' : '').'لقد أكملت هذه المرحلة بنجاح 🎉', [
+                ($isMatch ? 'إجابة صحيحة! ' : '').'لقد أكملت هذه المرحلة بنجاح', [
                     'is_correct' => $isMatch, // نتيجة المحاولة الأخيرة
                     'final_score' => $currentScore, // نتيجة المرحلة الحالية
                     'status' => 'level_completed',
                     'level_completed_first_time' => $firstCompletion,
+                    'points_awarded' => $pointsAwarded,
                     'total_points' => $totalPoints, // إجمالي نقاط الطالب
                 ]);
 
