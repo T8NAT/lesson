@@ -71,7 +71,7 @@ class GameStateManagerService
                 $student = Student::find($studentId);
                 if ($student) {
                     $student->addPoints($level->points_reward);
-                    Log::info("Student {$studentId} completed Level {$levelId} FIRST TIME. Earned {$level->points_reward} points.");
+                    Log::info("Student {$studentId} completed Level {$level->level_number} FIRST TIME. Earned {$level->points_reward} points.");
                 }
             }
             return true;
