@@ -1382,8 +1382,8 @@
                 <!--end::sidebar menu-->
                 <!--begin::Footer-->
                 <div class="app-sidebar-footer flex-column-auto pt-2 pb-6 px-6" id="kt_app_sidebar_footer">
-                    @auth('admin')
-                        @if(Auth::user()->role->name === 'admin')
+                    @auth('user')
+                        @if(Auth::user()->role_id == 1)
                         <a href="{{route('admin-logout')}}"  class="btn btn-flex flex-center btn-custom btn-primary overflow-hidden text-nowrap px-0 h-40px w-100" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss-="click" title="نتمنى ان نراك مرة اخرى">
                             @endif
                             @else
