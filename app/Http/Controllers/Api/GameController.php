@@ -900,6 +900,7 @@ public function getLevelsForGame(Request $request,$gameId)
         $categoryId = $level->category_id;
 
          if ($level->level_number > 1) {
+//             Log::info('يجب اكمال المستوى السابق' , [$level->level_number]);
              $previousLevelCompleted = DB::table('student_level')
                                      ->where('student_id', $studentId)
                                      ->whereHas('level', function ($q) use ($level) {
