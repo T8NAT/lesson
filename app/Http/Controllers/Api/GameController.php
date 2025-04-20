@@ -898,19 +898,26 @@ public function getLevelsForGame(Request $request,$gameId)
             return ControllerHelper::generateResponseApi(false, 'خطأ في إعدادات المرحلة.', null, 500);
         }
         $categoryId = $level->category_id;
+        if ($level->level_number > 1) {
+            $student = Student::find($studentId);
+            if ($student) {
+                $previousLevelNumber = $level->level_number - 1;
 
-         if ($level->level_number > 1) {
-//             Log::info('يجب اكمال المستوى السابق' , [$level->level_number]);
-             $previousLevelCompleted = DB::table('student_level')
-                                     ->where('student_id', $studentId)
-                                     ->whereHas('level', function ($q) use ($level) {
-                                         $q->where('game_id', $level->game_id) // التأكد من أنها لنفس اللعبة
-                                           ->where('level_number', $level->level_number - 1);
-                                      })->exists();
-             if (!$previousLevelCompleted) {
-                 return ControllerHelper::generateResponseApi(false, 'يجب إكمال المستوى السابق أولاً.', null, 403);
-             }
-         }
+                $previousLevelCompleted = $student->completedLevels()
+                ->whereHas('games', function ($query) use ($gameId) {
+                    $query->where('games.id', $gameId);
+                })
+                    ->where('level_number', $previousLevelNumber)
+                    ->exists();
+                if (!$previousLevelCompleted) {
+                    Log::info("Student {$studentId} attempted level {$level->level_number} of game {$gameId} without completing level {$previousLevelNumber}.");
+                    return ControllerHelper::generateResponseApi(false, 'يجب إكمال المستوى السابق أولاً.', null, 403);
+                }
+            } else {
+                Log::error("Student not found when checking previous level completion. Student ID: {$studentId}");
+                return ControllerHelper::generateResponseApi(false, 'خطأ في بيانات الطالب.', null, 500);
+            }
+        }
         $wordIdsQuery = Word::where('category_id', $categoryId);
         if ($gameType === 'صورة وكلمات') {
             $wordIdsQuery->whereNotNull('image_id');
