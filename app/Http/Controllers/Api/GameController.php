@@ -969,13 +969,14 @@ public function getLevelsForGame(Request $request,$gameId)
         $correctWordId = $gameState['current_word_id'];
         $correctWordModel = Word::find($correctWordId);
         if (!$correctWordModel) {
-            $this->gameStateManager->clearState($studentId, $levelId); // تنظيف الحالة عند خطأ فادح
+            $this->gameStateManager->clearState($studentId, $levelId);
             Log::error("Could not find Word with ID {$correctWordId} specified in game state for student {$studentId}, level {$levelId}. State cleared.");
             return ControllerHelper::generateResponseApi(false, 'خطأ فادح: الكلمة الحالية غير موجودة.', null, 500);
         }
         $correctWordText = strtolower($correctWordModel->word);
         $isMatch = false;
         $detectedLabels = [];
+
         // -------- التحقق حسب نوع اللعبة --------
 
         if ($gameType === 'كلمات') {
@@ -1074,8 +1075,8 @@ public function getLevelsForGame(Request $request,$gameId)
 
             // تحضير بيانات السؤال التالي
             // نحتاج لجلب المرحلة مرة أخرى إذا لم تكن معنا
-            $level = Level::find($levelId); // قد يكون من الأفضل تخزين اسم المرحلة في الحالة أيضًا
-            if (!$level) { /* معالجة الخطأ */
+            $level = Level::find($levelId);
+            if (!$level) {
             }
             $nextQuestionData = $this->prepareQuestionData($nextWordId, $gameType, $level);
 
