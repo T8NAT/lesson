@@ -28,7 +28,7 @@ Route::namespace('api/')->prefix('teacher/')->group(function (){
 Route::namespace('api/')->prefix('games/')->group(function (){
     Route::get('get-games',[GameController::class, 'index']);
     Route::post('game/{id}/send', [TestGameController::class, 'sendWord']);
-    Route::get('/levels/{levelId}/start',[GameController::class, 'getLevelsForGame']);
+    Route::get('/categories/{categoryId}/games/{gameId}/levels',[GameController::class, 'getLevelsForGame']);
     Route::post('/game/{gameId}/levels/{levelId}/start', [GameController::class, 'startLevel'])->middleware('auth:student');
 //    Route::post('/levels/{levelId}/start',[GameController::class, 'startLevel']);
     Route::post('check-image', [GameController::class, 'checkImage'])->middleware('auth:student');
