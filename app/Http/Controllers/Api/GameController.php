@@ -839,27 +839,43 @@ class GameController extends Controller
 
 // ****************** new code ************************
 
-public function getLevelsForGame(Request $request,$gameId)
-{
-    $game = Game::findOrFail($gameId);
-    if (!$game) {
-        return ControllerHelper::generateResponseApi(false,'اللعبة غير موجودة',null,404);
+    /**
+     * جلب مراحل لعبة معينة حسب القسم
+     * GET /api/games/categories/{categoryId}/games/{gameId}/levels
+     */
+    public function getLevelsForGame(Request $request, $categoryId, $gameId)
+    {
+        $game = Game::with('categories')->findOrFail($gameId);
+
+        if (!Auth::guard('student')->check()) {
+            return ControllerHelper::generateResponseApi(false, 'المستخدم غير مسجل للدخول', null, 401);
+        }
+
+        $studentId = Auth::guard('student')->user()->id;
+
+        $isLinked = $game->categories->contains('id', $categoryId);
+        if (!$isLinked) {
+            return ControllerHelper::generateResponseApi(false, 'اللعبة غير مرتبطة بهذا القسم', null, 404);
+        }
+
+        $levels = Level::where('category_id', $categoryId)
+            ->whereHas('games', function ($query) use ($gameId) {
+                $query->where('games.id', $gameId);
+            })
+            ->withExists([
+                'completedByStudents' => function ($query) use ($studentId) {
+                    $query->where('student_id', $studentId);
+                }
+            ])
+            ->where('is_active', true)
+            ->orderBy('level_number')
+            ->get(['id', 'level_number', 'name', 'description', 'points_reward', 'category_id']);
+
+        return ControllerHelper::generateResponseApi(true, 'تم جلب مراحل اللعبة داخل القسم بنجاح', $levels);
     }
-    if (!Auth::guard('student')->check()) {
-        return ControllerHelper::generateResponseApi(false,'المستخدم غير مسجل للدخول',null,401);
-    }
-    $studentId = Auth::guard('student')->user()->id;
-    $levels = Level::whereHas('games',function ($query) use ($gameId){
-        $query->where('games.id',$gameId);
-    })
-        ->withExists(['completedByStudents' => function ($query) use ($studentId){
-            $query->where('student_id',$studentId);
-        }])
-        ->where('is_active' ,true)
-        ->orderBy('level_number')
-        ->get(['id','level_number','name','description','points_reward']);
-    return ControllerHelper::generateResponseApi(true,'تم جلب مراحل اللعبة بنجاح',$levels);
-}
+
+
+
 
     /**
      * بدء مرحلة للعبة محددة
@@ -877,7 +893,8 @@ public function getLevelsForGame(Request $request,$gameId)
 
         $game = Game::with('type')->find($gameId);
         if (!$game || !$game->type) {
-            return ControllerHelper::generateResponseApi(false, 'اللعبة المطلوبة غير موجودة أو نوعها غير محدد.', null, 404);
+            return ControllerHelper::generateResponseApi(false, 'اللعبة المطلوبة غير موجودة أو نوعها غير محدد.', null,
+                404);
         }
         $gameType = $game->type->name;
 
@@ -890,7 +907,8 @@ public function getLevelsForGame(Request $request,$gameId)
             ->first();
 
         if (!$level) {
-            return ControllerHelper::generateResponseApi(false, "المرحلة (ID:{$levelId}) غير موجودة، غير نشطة، أو غير مرتبطة باللعبة (ID:{$gameId}).", null, 404);
+            return ControllerHelper::generateResponseApi(false,
+                "المرحلة (ID:{$levelId}) غير موجودة، غير نشطة، أو غير مرتبطة باللعبة (ID:{$gameId}).", null, 404);
         }
 
         if (!$level->category) {
@@ -904,9 +922,9 @@ public function getLevelsForGame(Request $request,$gameId)
                 $previousLevelNumber = $level->level_number - 1;
 
                 $previousLevelCompleted = $student->completedLevels()
-                ->whereHas('games', function ($query) use ($gameId) {
-                    $query->where('games.id', $gameId);
-                })
+                    ->whereHas('games', function ($query) use ($gameId) {
+                        $query->where('games.id', $gameId);
+                    })
                     ->where('level_number', $previousLevelNumber)
                     ->exists();
                 if (!$previousLevelCompleted) {
@@ -927,7 +945,8 @@ public function getLevelsForGame(Request $request,$gameId)
         $wordIds = $wordIdsQuery->pluck('id')->shuffle()->toArray();
 
         if (empty($wordIds)) {
-            return ControllerHelper::generateResponseApi(false, "لا يوجد محتوى مناسب لقسم '{$level->category->name}' يتوافق مع لعبة '{$gameType}'.", null, 404);
+            return ControllerHelper::generateResponseApi(false,
+                "لا يوجد محتوى مناسب لقسم '{$level->category->name}' يتوافق مع لعبة '{$gameType}'.", null, 404);
         }
 
         $this->gameStateManager->startLevel($studentId, $levelId, $gameType, $wordIds);
@@ -943,7 +962,8 @@ public function getLevelsForGame(Request $request,$gameId)
 
         if (isset($firstQuestionData['error'])) {
             $this->gameStateManager->clearState($studentId, $levelId);
-            return ControllerHelper::generateResponseApi(false, "خطأ في بيانات السؤال الأول: " . $firstQuestionData['error'], null, 500);
+            return ControllerHelper::generateResponseApi(false,
+                "خطأ في بيانات السؤال الأول: ".$firstQuestionData['error'], null, 500);
         }
 
         $responseData = array_merge([
@@ -952,7 +972,8 @@ public function getLevelsForGame(Request $request,$gameId)
             'category_name' => $level->category->name,
         ], $firstQuestionData);
 
-        return ControllerHelper::generateResponseApi(true, "المرحلة '{$level->name}' للعبة '{$game->name}' بدأت!", $responseData, 200);
+        return ControllerHelper::generateResponseApi(true, "المرحلة '{$level->name}' للعبة '{$game->name}' بدأت!",
+            $responseData, 200);
     }
 
     public function checkAnswer(Request $request, $levelId)
@@ -989,7 +1010,8 @@ public function getLevelsForGame(Request $request,$gameId)
 
         if ($gameType === 'كلمات') {
             if (!$request->hasFile('image')) {
-                return ControllerHelper::generateResponseApi(false, 'لعبة البحث عن الاسماء تتطلب إرسال صورة.', null, 400);
+                return ControllerHelper::generateResponseApi(false, 'لعبة البحث عن الاسماء تتطلب إرسال صورة.', null,
+                    400);
             }
 
             $imageFile = $request->file('image');
@@ -1047,7 +1069,7 @@ public function getLevelsForGame(Request $request,$gameId)
             // جلب النقاط الكلية المحدثة
             $student = Student::find($studentId);
             $pointsAwarded = 0; // تهيئة النقاط الممنوحة لهذه الجولة
-            if ($firstCompletion && $student){
+            if ($firstCompletion && $student) {
                 $level = Level::find($levelId);
                 if ($level && $level->points_reward > 0) {
                     $student->addPoints($level->points_reward);
@@ -1116,6 +1138,7 @@ public function getLevelsForGame(Request $request,$gameId)
                 $responseData);
         }
     }
+
     private function prepareQuestionData(?int $wordId, string $gameType, Level $level): array
     {
         if (!$wordId) {
