@@ -110,7 +110,7 @@
                         <!--begin::Card body-->
                         <div class="card-body pt-0">
                             <!--begin::Select2-->
-                            <select class="form-select mb-2 select2-hidden-accessible" data-control="select2" multiple name="category_id[]" data-hide-search="true" aria-hidden="true"  data-placeholder="حدد خياراً" data-selected-id="{{ $game->categories->pluck('id')  }}">
+                            <select class="form-select mb-2 select2-hidden-accessible" data-control="select2" multiple name="category_id[]" data-hide-search="true" aria-hidden="true"  data-placeholder="حدد خياراً" data-selected-ids="{{ $game->categories->pluck('id')  }}">
                                 <option></option>
                             </select>
                             <!--end::Select2-->
