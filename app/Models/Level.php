@@ -43,5 +43,11 @@ class Level extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function words(): BelongsToMany
+    {
+        return $this->belongsToMany(Word::class, 'level_word');
+
+    }
+
 
 }
