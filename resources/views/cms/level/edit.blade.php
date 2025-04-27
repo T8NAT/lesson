@@ -52,6 +52,52 @@
                         <!--end::Card body-->
                     </div>
                     <!--end::Status-->
+                    <!--begin::Category-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>{{'الاقسام'}}</h2>
+                            </div>
+                            <!--end::Card title-->
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Select2-->
+                            <select class="form-select mb-2" name="category_id" data-control="select2" data-hide-search="true" data-placeholder="{{'حدد القسم'}}" data-selected-id="{{ $level->category->id  }}" >
+                                <option></option>
+                            </select>
+                            <!--end::Select2-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7">{{'اختيار القسم.'}}</div>
+                            <!--end::Description-->
+                            @error('category_id')
+                            <span class="text-danger">{{$message}}</span>
+                            @enderror
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Category-->
+                    <!--begin::Words-->
+                    <div class="card card-flush py-4" id="words_section" style="display:none;">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2>الكلمات</h2>
+                            </div>
+                        </div>
+                        <div class="card-body pt-0">
+                            <select class="form-select mb-2" name="word_id[]" id="words_select"  multiple data-control="select2" data-placeholder="اختر الكلمات المناسبة للمرحلة">
+                                <option></option>
+                            </select>
+                            <div class="text-muted fs-7">اختر الكلمات الخاصة بالمرحلة.</div>
+                            @error('word_id')
+                            <span class="text-danger">{{$message}}</span>
+                            @enderror
+                        </div>
+                    </div>
+                    <!--end::Words-->
                 </div>
                 <!--end::Aside column-->
                 <!--begin::Main column-->
@@ -171,5 +217,14 @@
         const games = {
             get: "{{ route('getGames') }}",
         };
+        const categories = {
+            get:"{{route('getCategories')}}"
+        }
+
+        const words = {
+            get: "{{ route('getWordsByCategory') }}",
+        };
+
+        const selectedWords = {!! $level->words->pluck('id') !!};
     </script>
 @endsection
