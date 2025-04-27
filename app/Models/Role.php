@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Role extends Model
 {
-    public $guarded = [];
+    protected  $guarded = [];
     public function users():HasMany
     {
         return $this->hasMany(User::class);
 
     }
 
-    public function permissions():hasMany
+    public function permissions(): HasMany
     {
         return $this->hasMany(Permission::class);
 
