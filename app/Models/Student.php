@@ -38,9 +38,14 @@ class Student extends Authenticatable
     {
         return $this->belongsTo(Teacher::class);
     }
-    public function CompletedLevels() : BelongsToMany{
+    public function completedLevels() : BelongsToMany{
         return $this->belongsToMany(Level::class,'student_level')->withPivot('completed_at');
     }
+    public function completedLevelsCount(): int
+    {
+        return $this->completedLevels()->count();
+    }
+
     public function addPoints($points):void
     {
         if ($points > 0){
