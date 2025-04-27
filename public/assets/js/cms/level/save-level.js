@@ -165,29 +165,78 @@ var KTAppSaveLevel = function () {
     $(document).ready(function() {
         $('select[name="category_id"]').each(function() {
             const selectElement = $(this);
-            const categoryIds = selectElement.data('selected-ids');
+            const categoryId = selectElement.data('selected-id');
 
-            if (categoryIds &&  categoryIds.length > 0) {
+            if (categoryId) {
                 $.ajax({
                     url: categories.get,
                     dataType: 'json',
-                    data: { ids: categoryIds }
+                    data: { id: categoryId }
                 }).then(function(data) {
-                    if (data && data.data) {
-                        data.data.forEach(function(item) {
-                            const option = new Option(item.name, item.ids, true, true);
-                            selectElement.append(option);
-                        });
-                        selectElement.trigger('change');
+                    if (data && data.data ) {
+                        const selectedItem = data.data.find(item => item.id == categoryId);
+                        if(selectedItem){
+                            const option = new Option(selectedItem.name, selectedItem.id, true, true);
+                            selectElement.append(option).trigger('change');
+                            initializeSelect2WithInfiniteScroll(selectElement, categories.get, categoryId);
+                        } else {
+                            initializeSelect2WithInfiniteScroll(selectElement, categories.get, categoryId);
+                        }
                     }
-                    initializeSelect2WithInfiniteScroll(selectElement, categories.get, categoryIds);
                 });
-
-            }else {
-                initializeSelect2WithInfiniteScroll(selectElement, categories.get);
+            }else{
+                initializeSelect2WithInfiniteScroll(selectElement, categories.get, categoryId);
             }
         });
     });
+
+    let nextPageUrl = null;
+    let isLoading = false;
+
+    $('select[name="category_id"]').on('change', function () {
+        var categoryId = $(this).val();
+        nextPageUrl = null;
+
+        if (categoryId) {
+            $('#words_section').show();
+            $('#words_select').empty().append('<option></option>');
+            loadWords(words.get + '?category_id=' + categoryId);
+        } else {
+            $('#words_section').hide();
+            $('#words_select').empty();
+        }
+    });
+
+    function loadWords(url) {
+        if (isLoading || url === null) return;
+
+        isLoading = true;
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            success: function (response) {
+                $.each(response.data, function (key, value) {
+                    let isSelected = selectedWords.includes(value.id);
+                    $('#words_select').append('<option value="' + value.id + '" ' + (isSelected ? 'selected' : '') + '>' + value.word + '</option>');
+                });
+
+                nextPageUrl = response.next_page_url;
+                isLoading = false;
+                $('#words_select').trigger('change');
+            },
+            error: function () {
+                isLoading = false;
+            }
+        });
+    }
+
+    $('#words_select').on('scroll', function () {
+        if ($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight - 10) {
+            loadWords(nextPageUrl);
+        }
+    });
+
 
 
     return {
