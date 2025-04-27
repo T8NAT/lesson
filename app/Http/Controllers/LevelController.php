@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ControllerHelper;
 use App\Http\Requests\LevelRequest;
 use App\Models\Level;
+use App\Models\Word;
 use Illuminate\Http\Request;
 
 class LevelController extends Controller
@@ -73,7 +74,6 @@ class LevelController extends Controller
 
         if ($request->filled('word_id')) {
             $level->words()->attach($request->word_id);
-
         }
 
         $is_Saved = $level;
@@ -105,18 +105,10 @@ class LevelController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(LevelRequest $request, string $id)
     {
         $request->request->add(['id' => $id]);
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'game_id' => 'required|exists:games,id',
-            'level_number' => 'required|numeric|max:255',
-            'is_active' => 'in:on',
-            'description' => 'nullable|string|max:255',
-            'points_reward' => 'nullable|numeric|max:255',
-
-        ]);
+        $request->validated();
         $level = Level::query()->findOrFail($id);
 
         $data = $request->only(['name', 'level_number', 'is_active', 'description', 'points_reward']);
@@ -126,6 +118,9 @@ class LevelController extends Controller
 
         if ($request->has('game_id')) {
             $level->games()->sync($request->game_id);
+        }
+        if ($request->filled('word_id')) {
+            $level->words()->sync($request->word_id);
         }
 
         if ($is_Updated) {
@@ -149,5 +144,14 @@ class LevelController extends Controller
         }else{
             return ControllerHelper::generateResponse('error','فشلت عمليىة الحذف ، حاول مرة اخرى !',500);
         }
+    }
+
+    public function getWordsByCategory(Request $request)
+    {
+        $words = Word::where('category_id', $request->category_id)->paginate(10);
+        return response()->json([
+            'data' => $words->items(),
+            'next_page_url' => $words->nextPageUrl(),
+        ]);
     }
 }
