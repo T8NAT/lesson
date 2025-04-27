@@ -24,17 +24,24 @@ class Level extends Model
         return $this->belongsToMany(Game::class, 'game_level');
     }
 
-    public function completedByStudents():BelongsToMany
+    public function completedByStudents(): BelongsToMany
     {
-        return $this->belongsToMany(Student::class,'student_level')->withPivot('completed_at');
+        return $this->belongsToMany(Student::class, 'student_level')->withPivot('completed_at');
     }
 
 
-    public function category():BelongsTo
+    /**
+     * فحص المرحلة إذا مكتملة لطالب معين
+     */
+    public function isCompletedBy(Student $student): bool
+    {
+        return $this->completedByStudents()->where('student_id', $student->id)->exists();
+    }
+
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
-
 
 
 }
