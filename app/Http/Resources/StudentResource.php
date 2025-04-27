@@ -19,6 +19,7 @@ class StudentResource extends JsonResource
             'phone' => $this->phone,
             'terms_and_conditions' => (bool) $this->terms_and_conditions,
             'type' => 'Student',
+            'points'=> $this->points,
             'created_at' => $this->created_at->toDateTimeString(),
             'token' => $this->token,
 
