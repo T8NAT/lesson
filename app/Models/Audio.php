@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Audio extends Model
 {
@@ -15,8 +17,8 @@ class Audio extends Model
         'description',
     ];
 
-    public function words(): HasMany
+    public function word(): HasOne
     {
-        return $this->hasMany(Word::class);
+        return $this->hasOne(Word::class);
     }
 }
