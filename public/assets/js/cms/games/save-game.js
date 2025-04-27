@@ -183,27 +183,26 @@ var KTAppSaveGame = function () {
     $(document).ready(function() {
         $('select[name="category_id[]"]').each(function() {
             const selectElement = $(this);
-            const categoryId = selectElement.data('selected-id');
+            const categoryIds = selectElement.data('selected-ids');
 
-            if (categoryId) {
+            if (categoryIds &&  categoryIds.length > 0) {
                 $.ajax({
                     url: categories.get,
                     dataType: 'json',
-                    data: { id: categoryId }
+                    data: { ids: categoryIds }
                 }).then(function(data) {
-                    if (data && data.data ) {
-                        const selectedItem = data.data.find(item => item.id == categoryId);
-                        if(selectedItem){
-                            const option = new Option(selectedItem.name, selectedItem.id, true, true);
-                            selectElement.append(option).trigger('change');
-                            initializeSelect2WithInfiniteScroll(selectElement, categories.get, categoryId);
-                        } else {
-                            initializeSelect2WithInfiniteScroll(selectElement, categories.get, categoryId);
-                        }
+                    if (data && data.data) {
+                        data.data.forEach(function(item) {
+                            const option = new Option(item.name, item.ids, true, true);
+                            selectElement.append(option);
+                        });
+                        selectElement.trigger('change');
                     }
+                    initializeSelect2WithInfiniteScroll(selectElement, categories.get, categoryIds);
+
                 });
             }else{
-                initializeSelect2WithInfiniteScroll(selectElement, categories.get, categoryId);
+                initializeSelect2WithInfiniteScroll(selectElement, categories.get);
             }
         });
     });
