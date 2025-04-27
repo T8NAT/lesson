@@ -66,7 +66,6 @@ class GameController extends Controller
             'type_id'    => 'required|exists:types,id',
             'slug'       => 'required|unique:games,slug',
             'status'     => 'required|in:active,inactive',
-            'images.*'   => 'nullable',
 
         ]);
 
@@ -84,19 +83,6 @@ class GameController extends Controller
         if ($request->has('category_id')) {
             $game->categories()->attach($request->category_id);
         }
-
-        $uploadedFiles = session()->get('uploaded_files', []);
-        $savedImages = $this->uploadService->moveMedia($uploadedFiles,'media/games');
-
-        foreach ($savedImages as $imagePath) {
-            $game->images()->create([
-                'game_id' => $game->id,
-                'images' => $imagePath,
-            ]);
-        }
-
-        session()->forget('uploaded_files');
-
         if ($game) {
             return ControllerHelper::generateResponse('success','تم اضافة اللعبة بنجاح',200);
         }else{
