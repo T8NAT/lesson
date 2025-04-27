@@ -871,11 +871,14 @@ class GameController extends Controller
             ->orderBy('level_number')
             ->get(['id', 'level_number', 'name', 'description', 'points_reward', 'category_id']);
 
-        return ControllerHelper::generateResponseApi(true, 'تم جلب مراحل اللعبة داخل القسم بنجاح', $levels);
+        $levelsCount = $levels->count();
+        $data = [
+            'levelsCount' => $levelsCount,
+            'levels' => $levels,
+        ];
+
+        return ControllerHelper::generateResponseApi(true, 'تم جلب مراحل اللعبة داخل القسم بنجاح', $data);
     }
-
-
-
 
     /**
      * بدء مرحلة للعبة محددة
@@ -953,6 +956,7 @@ class GameController extends Controller
 
         // 7. جلب بيانات السؤال الأول
         $currentState = $this->gameStateManager->getState($studentId, $levelId);
+
         if (!$currentState || !isset($currentState['current_word_id'])) {
             Log::critical("Failed to retrieve state immediately after starting level {$levelId} for student {$studentId}.");
             return ControllerHelper::generateResponseApi(false, "حدث خطأ غير متوقع عند بدء المرحلة.", null, 500);
@@ -1083,12 +1087,13 @@ class GameController extends Controller
 
             return ControllerHelper::generateResponseApi(true,
                 ($isMatch ? 'إجابة صحيحة! ' : '').'لقد أكملت هذه المرحلة بنجاح', [
-                    'is_correct' => $isMatch, // نتيجة المحاولة الأخيرة
-                    'final_score' => $currentScore, // نتيجة المرحلة الحالية
+                    'is_correct' => $isMatch,
+                    'final_score' => $currentScore,
                     'status' => 'level_completed',
                     'level_completed_first_time' => $firstCompletion,
                     'points_awarded' => $pointsAwarded,
-                    'total_points' => $totalPoints, // إجمالي نقاط الطالب
+                    'total_points' => $totalPoints,
+                    'correct_answer_text' => (!$isMatch && in_array($gameType, ['صورة وكلمات', 'صوت'])) ? $correctWordModel->word : null,
                 ]);
 
         } else {
@@ -1126,16 +1131,16 @@ class GameController extends Controller
 
             // إضافة معلومات إضافية عند الخطأ (اختياري)
             if (!$isMatch) {
-//            $responseData['correct_answer_text'] = $correctWordText; // مساعدة الطالب
+                if (in_array($gameType, ['صورة وكلمات', 'صوت'])) {
+                    $responseData['correct_answer_text'] = $correctWordModel->word;
+                }
+
                 if ($gameType === 'كلمات' && !empty($detectedLabels)) {
-                    // إرسال أهم النتائج فقط
                     $responseData['detected_labels'] = array_slice(array_column($detectedLabels, 'description'), 0, 5);
                 }
             }
 
-            return ControllerHelper::generateResponseApi(true,
-                ($isMatch ? 'إجابة صحيحة! السؤال التالي...' : 'إجابة خاطئة. حاول مجدداً مع السؤال التالي...'),
-                $responseData);
+            return ControllerHelper::generateResponseApi(true, ($isMatch ? 'إجابة صحيحة! السؤال التالي...' : 'إجابة خاطئة. حاول مجدداً مع السؤال التالي...'), $responseData);
         }
     }
 
@@ -1167,7 +1172,7 @@ class GameController extends Controller
             // 'level_id' => $level->id,
             // 'level_name' => $level->name,
             'game_type' => $gameType,
-            // 'correct_word' => $wordModel->word
+//             'correct_word' => $wordModel->word
         ];
 
         try {
