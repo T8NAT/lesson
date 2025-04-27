@@ -20,7 +20,7 @@ class Category extends Model
     {
         return $this->belongsToMany(Game::class, 'category_game', 'category_id', 'game_id');
     }
-    public function levels(): hasMany
+    public function levels(): HasMany
     {
         return $this->hasMany(Level::class);
     }
