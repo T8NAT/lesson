@@ -49,6 +49,8 @@ Route::prefix('dashboard')->middleware(['auth:user,admin'])->group(function () {
     Route::put('user-update-password/{id}',[UserController::class,'updatePassword'])->name('user-update-password');
     Route::put('user-update-role/{id}',[UserController::class,'updateRole'])->name('user-update-role');
 
+    Route::get('/get-words-by-category', [LevelController::class, 'getWordsByCategory'])->name('getWordsByCategory');
+
 
     Route::delete('delete-selected',[UserController::class,'deleteSelected']);
     Route::get('logout',[AuthController::class,'logout'])->name('logout');
