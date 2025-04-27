@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ControllerHelper;
+use App\Http\Requests\LevelRequest;
 use App\Models\Level;
 use Illuminate\Http\Request;
 
@@ -55,32 +56,33 @@ class LevelController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(LevelRequest $request)
     {
 //        dd($request);
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'game_id' => 'required|exists:games,id',
-            'category_id' => 'required|exists:categories,id',
-            'level_number' => 'required|numeric|max:255',
-            'is_active' => 'in:on',
-            'description' => 'nullable|string|max:255',
-            'points_reward' => 'nullable|numeric|max:255',
-        ]);
+        $request->validated();
 
-       $data = $request->only(['name', 'level_number', 'description', 'category_id','points_reward']);
+        $data = $request->only(['name', 'level_number', 'description', 'category_id', 'points_reward']);
 
-       $data['is_active'] = $request->has('is_active') ? 1 : 0;
+        $data['is_active'] = $request->has('is_active') ? 1 : 0;
 
-        $is_Saved = Level::query()->create($data);
-        if ($request->has('game_id')) {
-            $is_Saved->games()->attach($request->game_id);
+        $level = Level::query()->create($data);
+
+        if ($request->filled('game_id')) {
+            $level->games()->attach($request->game_id);
         }
-       if ($is_Saved) {
-           return ControllerHelper::generateResponse('success','تم اضافة المرحلة بنجاح');
-       }else{
-           return ControllerHelper::generateResponse('error','فشلت العملية يرجى المحاولة لاحقاً',500);
-       }
+
+        if ($request->filled('word_id')) {
+            $level->words()->attach($request->word_id);
+
+        }
+
+        $is_Saved = $level;
+
+        if ($is_Saved) {
+            return ControllerHelper::generateResponse('success', 'تم اضافة المرحلة بنجاح');
+        } else {
+            return ControllerHelper::generateResponse('error', 'فشلت العملية يرجى المحاولة لاحقاً', 500);
+        }
     }
 
     /**
