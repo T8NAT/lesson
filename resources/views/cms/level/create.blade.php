@@ -79,6 +79,25 @@
                             <!--end::Card body-->
                         </div>
                         <!--end::Category-->
+                        <!--begin::Words-->
+                        <div class="card card-flush py-4" id="words_section" style="display:none;">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <h2>الكلمات</h2>
+                                </div>
+                            </div>
+                            <div class="card-body pt-0">
+                                <select class="form-select mb-2" name="word_id[]" id="words_select"  multiple data-control="select2" data-placeholder="اختر الكلمات المناسبة للمرحلة">
+                                    <option></option>
+                                </select>
+                                <div class="text-muted fs-7">اختر الكلمات الخاصة بالمرحلة.</div>
+                                @error('word_id')
+                                <span class="text-danger">{{$message}}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <!--end::Words-->
+
                     </div>
                     <!--end::Aside column-->
                     <!--begin::Main column-->
@@ -200,5 +219,9 @@
         const categories = {
             get:"{{route('getCategories')}}"
         }
+
+        const words = {
+            get: "{{ route('getWordsByCategory') }}",
+        };
     </script>
 @endsection
