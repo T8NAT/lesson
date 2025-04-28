@@ -223,5 +223,6 @@
         const words = {
             get: "{{ route('getWordsByCategory') }}",
         };
+        var selectedWords = [];
     </script>
 @endsection
