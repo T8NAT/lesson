@@ -145,18 +145,6 @@ class GameController extends Controller
             $game->categories()->sync($request->category_id);
         }
 
-        $uploadedFiles = session()->get('uploaded_files', []);
-        $savedImages = $UploadService->moveMedia($uploadedFiles,'media/games');
-
-        foreach ($savedImages as $imagePath) {
-            $game->images()->create([
-                'game_id' => $game->id,
-                'images' => $imagePath,
-            ]);
-        }
-
-        session()->forget('uploaded_files');
-
         if ($is_Updated) {
             return ControllerHelper::generateResponse('success','تم تعديل اللعبة بنجاح',200);
         }else{
