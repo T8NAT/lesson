@@ -25,7 +25,7 @@ class LevelController extends Controller
                     return '<input class="form-check-input" type="checkbox"  id="select-all"  data-kt-check-target="#kt_level_table .form-check-input" value="1" data-id="'.$row->id.'">';
                 })
                 ->editColumn('name', function ($row) {
-                    return $row->name;
+                    return '<a class="link-info" href="'.route('levels.edit',$row->id).'">'. $row->name.'</a>';
                 })
                 ->editColumn('games', function ($row) {
                     return $row->games->pluck('name')->implode(', ');
@@ -40,7 +40,7 @@ class LevelController extends Controller
                         return '<div class="badge badge-light-danger">'. 'غير فعالة' .'</div>';
                     }
                 })
-                ->rawColumns(['actions','checkbox','is_active'])
+                ->rawColumns(['actions','checkbox','is_active','name'])
                 ->make(true);
         }
         return view('cms.level.index');
@@ -116,7 +116,7 @@ class LevelController extends Controller
 
         $is_Updated = $level->update($data);
 
-        if ($request->has('game_id')) {
+        if ($request->filled('game_id')) {
             $level->games()->sync($request->game_id);
         }
         if ($request->filled('word_id')) {
