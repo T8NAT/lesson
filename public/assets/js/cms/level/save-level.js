@@ -149,7 +149,7 @@ var KTAppSaveLevel = function () {
                 }).then(function(data) {
                     if (data && data.data) {
                         data.data.forEach(function(item) {
-                            const option = new Option(item.name, item.ids, true, true);
+                            const option = new Option(item.name, item.id, true, true);
                             selectElement.append(option);
                         });
                         selectElement.trigger('change');
@@ -184,11 +184,12 @@ var KTAppSaveLevel = function () {
                         }
                     }
                 });
-            }else{
-                initializeSelect2WithInfiniteScroll(selectElement, categories.get, categoryId);
+            } else {
+                initializeSelect2WithInfiniteScroll(selectElement, categories.get);
             }
         });
     });
+
 
     let nextPageUrl = null;
     let isLoading = false;
@@ -217,8 +218,12 @@ var KTAppSaveLevel = function () {
             type: "GET",
             success: function (response) {
                 $.each(response.data, function (key, value) {
-                    let isSelected = selectedWords.includes(value.id);
-                    $('#words_select').append('<option value="' + value.id + '" ' + (isSelected ? 'selected' : '') + '>' + value.word + '</option>');
+                    let isSelected = selectedWords.includes(value.id) ;
+                    if (isSelected) {
+                        $('#words_select').append('<option value="' + value.id + '" ' + (isSelected ? 'selected' : '') + '>' + value.word + '</option>');
+                    }
+                    $('#words_select').append('<option value="' + value.id + '">' + value.word + '</option>');
+
                 });
 
                 nextPageUrl = response.next_page_url;
