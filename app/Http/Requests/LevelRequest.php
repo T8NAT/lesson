@@ -8,9 +8,12 @@ class LevelRequest extends FormRequest
 {
     public function rules(): array
     {
+        $id = $this->route('level');
+
         return [
-            'name'          => 'required|string|max:255',
-            'game_id'       => 'required|exists:games,id',
+            'name'          => ['required', "unique:levels,name,{$id},id",'string', 'max:255'],
+            'game_id'       => 'required|array|exists:games,id',
+            'game_id.*'     => 'exists:games,id',
             'category_id'   => 'required|exists:categories,id',
             'level_number'  => 'required|numeric|max:255',
             'is_active'     => 'in:on',
