@@ -38,7 +38,7 @@
                         <!--begin::Card body-->
                         <div class="card-body pt-0">
                             <!--begin::Select2-->
-                            <select class="form-select mb-2" name="game_id[]" data-control="select2" data-hide-search="true" multiple="multiple" data-placeholder="{{'حدد لعبة'}}" data-selected-ids="{{ $level->games->pluck('id')  }}" >
+                            <select class="form-select mb-2" name="game_id[]" data-control="select2" data-hide-search="true" multiple="multiple" data-placeholder="{{'حدد لعبة'}}" data-selected-ids="{{ $level->games->pluck('id') }}" >
                                 <option></option>
                             </select>
                             <!--end::Select2-->
