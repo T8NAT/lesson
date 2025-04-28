@@ -939,13 +939,15 @@ class GameController extends Controller
                 return ControllerHelper::generateResponseApi(false, 'خطأ في بيانات الطالب.', null, 500);
             }
         }
-        $wordIdsQuery = Word::where('category_id', $categoryId);
+        $wordIdsQuery = $level->words()->newQuery();
+
+//        dd($wordIdsQuery);
         if ($gameType === 'صورة وكلمات') {
             $wordIdsQuery->whereNotNull('image_id');
         } elseif ($gameType === 'صوت') {
             $wordIdsQuery->whereNotNull('audio_id');
         }
-        $wordIds = $wordIdsQuery->pluck('id')->shuffle()->toArray();
+        $wordIds = $wordIdsQuery->pluck('words.id')->shuffle()->toArray();
 
         if (empty($wordIds)) {
             return ControllerHelper::generateResponseApi(false,
@@ -956,6 +958,7 @@ class GameController extends Controller
 
         // 7. جلب بيانات السؤال الأول
         $currentState = $this->gameStateManager->getState($studentId, $levelId);
+//        dd($currentState);
 
         if (!$currentState || !isset($currentState['current_word_id'])) {
             Log::critical("Failed to retrieve state immediately after starting level {$levelId} for student {$studentId}.");
@@ -1151,18 +1154,18 @@ class GameController extends Controller
             return ['error' => 'Invalid Word ID provided.'];
         }
 
-        // تحميل العلاقات المطلوبة بكفاءة
+
         $wordModel = Word::with(['image', 'audio'])->find($wordId);
+
 
         if (!$wordModel) {
             Log::error("Could not find Word with ID {$wordId} for level {$level->id}");
             return ['error' => "Word data not found ({$wordId})."];
         }
 
-        // تأكد من وجود القسم المرتبط بالمستوى (حسب النموذج Level -> Category)
         if (!$level->relationLoaded('category')) {
             $level->load('category');
-        } // تحميل إذا لم يكن محملاً
+        }
         if (!$level->category) {
             Log::error("Category not loaded or associated with level {$level->id}");
             return ['error' => "Level category configuration error."];
@@ -1180,7 +1183,7 @@ class GameController extends Controller
                 $data['word_to_find'] = $wordModel->word;
 
             } elseif ($gameType === 'صورة وكلمات') {
-                if (!$wordModel->image || empty($wordModel->image->image)) {
+                if (empty(optional($wordModel->image)->image)){
                     throw new \Exception("Image path missing for Word ID {$wordId}.");
                 }
                 $correctWord = $wordModel->word;
@@ -1207,7 +1210,6 @@ class GameController extends Controller
                     $actualFetchCount = min($fetchCount, $availableIncorrect);
                     if ($actualFetchCount > 0) {
                         $incorrectWords = $allWordsInCategory->random($actualFetchCount);
-                        // إذا كانت random() تُرجع عنصراً واحداً كنص (وليس collection) عندما يكون العدد 1، قم بتحويله
                         if (is_string($incorrectWords)) {
                             $incorrectWords = collect([$incorrectWords]);
                         }
@@ -1230,7 +1232,8 @@ class GameController extends Controller
             }
         } catch (\Exception $e) {
             Log::error("Error preparing question data for word {$wordId}, game {$gameType}, level {$level->id}: ".$e->getMessage());
-            return ['error' => 'حدث خطأ أثناء تحضير بيانات السؤال.'];
+            report($e);
+            return ['error' => 'حدث خطأ داخلي أثناء تجهيز السؤال، الرجاء المحاولة لاحقاً.'];
         }
 
         return $data;
