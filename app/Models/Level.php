@@ -45,7 +45,7 @@ class Level extends Model
 
     public function words(): BelongsToMany
     {
-        return $this->belongsToMany(Word::class, 'level_word');
+        return $this->belongsToMany(Word::class, 'level_word', 'level_id', 'word_id');
 
     }
 
