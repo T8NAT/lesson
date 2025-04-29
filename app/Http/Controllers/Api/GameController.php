@@ -895,6 +895,7 @@ class GameController extends Controller
         $studentId = Auth::guard('student')->id();
 
         $game = Game::with('type')->find($gameId);
+
         if (!$game || !$game->type) {
             return ControllerHelper::generateResponseApi(false, 'اللعبة المطلوبة غير موجودة أو نوعها غير محدد.', null,
                 404);
@@ -944,7 +945,7 @@ class GameController extends Controller
 //        dd($wordIdsQuery);
         if ($gameType === 'صورة وكلمات') {
             $wordIdsQuery->whereNotNull('image_id');
-        } elseif ($gameType === 'صوت') {
+        } elseif (in_array($gameType,['صوت','صوت وكلمات'])) {
             $wordIdsQuery->whereNotNull('audio_id');
         }
         $wordIds = $wordIdsQuery->pluck('words.id')->shuffle()->toArray();
@@ -987,7 +988,8 @@ class GameController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'answer' => 'nullable|string|max:191',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'image'  => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'audio'  => 'nullable|file|mimes:mp3,wav|max:4096',
         ]);
         if ($validator->fails()) {
             return ControllerHelper::generateResponseApi(false, 'بيانات الإجابة غير صالحة.', $validator->errors(), 422);
@@ -997,6 +999,7 @@ class GameController extends Controller
         }
         $studentId = Auth::guard('student')->id();
         $gameState = $this->gameStateManager->getState($studentId, $levelId);
+
         if (!$gameState || !isset($gameState['game_type'], $gameState['current_word_id'], $gameState['remaining_word_ids'])) {
             return ControllerHelper::generateResponseApi(false,
                 'لم يتم العثور على لعبة نشطة لهذه المرحلة أو انتهت مدة الجلسة.', null, 404);
@@ -1004,6 +1007,7 @@ class GameController extends Controller
         $gameType = $gameState['game_type'];
         $correctWordId = $gameState['current_word_id'];
         $correctWordModel = Word::find($correctWordId);
+
         if (!$correctWordModel) {
             $this->gameStateManager->clearState($studentId, $levelId);
             Log::error("Could not find Word with ID {$correctWordId} specified in game state for student {$studentId}, level {$levelId}. State cleared.");
@@ -1056,7 +1060,18 @@ class GameController extends Controller
             $submittedAnswer = strtolower(trim($request->input('answer')));
             $isMatch = ($submittedAnswer === $correctWordText);
 
-        } else {
+        }elseif($gameType === 'صوت وكلمات'){
+            if (!$request->hasFile('audio')) {
+                return ControllerHelper::generateResponseApi(false, "لعبة '{$gameState['game_type']}' تتطلب إرسال ملف صوتي.", null, 400);
+            }
+            $audioFile = $request->file('audio');
+            $audioPath = null;
+            try {
+
+            }catch (\Exception $e) {
+                report($e);
+            }
+        }else {
             Log::error("Unsupported game type '{$gameType}' encountered during checkAnswer for student {$studentId}, level {$levelId}.");
             return ControllerHelper::generateResponseApi(false, 'نوع اللعبة غير مدعوم للتحقق.', null, 400);
         }
@@ -1073,9 +1088,9 @@ class GameController extends Controller
             $firstCompletion = $this->gameStateManager->markLevelCompleted($studentId, $levelId);
             $this->gameStateManager->clearState($studentId, $levelId);
 
-            // جلب النقاط الكلية المحدثة
+            // جلب نقاط الطالب
             $student = Student::find($studentId);
-            $pointsAwarded = 0; // تهيئة النقاط الممنوحة لهذه الجولة
+            $pointsAwarded = 0;
             if ($firstCompletion && $student) {
                 $level = Level::find($levelId);
                 if ($level && $level->points_reward > 0) {
@@ -1104,18 +1119,19 @@ class GameController extends Controller
             $nextWordId = array_shift($gameState['remaining_word_ids']);
             $newState = [
                 'game_type' => $gameType,
-                'level_id' => $levelId, // إعادة إضافته للتأكد
+                'level_id' => $levelId,
                 'current_word_id' => $nextWordId,
-                'remaining_word_ids' => $gameState['remaining_word_ids'], // القائمة المحدثة
-                'score' => $currentScore, // السكور المحدث
+                'remaining_word_ids' => $gameState['remaining_word_ids'],
+                'score' => $currentScore,
             ];
             $this->gameStateManager->updateState($studentId, $levelId, $newState);
 
             // تحضير بيانات السؤال التالي
-            // نحتاج لجلب المرحلة مرة أخرى إذا لم تكن معنا
-            $level = Level::find($levelId);
+            $level = Level::query()->where('is_active',true)->find($levelId);
             if (!$level) {
+                return ControllerHelper::generateResponseApi(false, "المرحلة غير موجودة ", null, 404);
             }
+
             $nextQuestionData = $this->prepareQuestionData($nextWordId, $gameType, $level);
 
 
@@ -1132,7 +1148,7 @@ class GameController extends Controller
                 'next_question_data' => $nextQuestionData,
             ];
 
-            // إضافة معلومات إضافية عند الخطأ (اختياري)
+            // إضافة معلومات إضافية عند الخطأ
             if (!$isMatch) {
                 if (in_array($gameType, ['صورة وكلمات', 'صوت'])) {
                     $responseData['correct_answer_text'] = $correctWordModel->word;
@@ -1200,12 +1216,14 @@ class GameController extends Controller
                 $availableIncorrect = $allWordsInCategory->count();
 
                 $fetchCount = $neededIncorrect;
+
                 if ($availableIncorrect < $neededIncorrect) {
                     Log::warning("Not enough distinct words in category {$level->category_id} to generate {$neededIncorrect} incorrect options for word ID {$wordId} ('{$correctWord}'). Available: {$availableIncorrect}");
                     $fetchCount = $availableIncorrect;
                 }
 
                 $incorrectWords = collect([]);
+
                 if ($fetchCount > 0) {
                     $actualFetchCount = min($fetchCount, $availableIncorrect);
                     if ($actualFetchCount > 0) {
@@ -1222,7 +1240,7 @@ class GameController extends Controller
                 $data['image_url'] = url(Storage::url($correctImagePath));
                 $data['options'] = $words->values()->all();
 
-            } elseif ($gameType === 'صوت') {
+            } elseif (in_array($gameType,['صوت','صوت وكلمات'])) {
                 $correctWord = $wordModel->word;
                 if (!$wordModel->audio || empty($wordModel->audio->path)) {
                     throw new \Exception("Audio path missing for Word ID {$wordId}.");
